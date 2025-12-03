@@ -1,0 +1,21 @@
+[project]
+name = "scholar-mcp"
+version = "0.1.0"
+description = "MCP server for scientific paper search across OpenAlex, Semantic Scholar, and Scopus"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp>=1.23.1",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.1",
+]
+
+[project.scripts]
+scholar-mcp = "src.server:main"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
