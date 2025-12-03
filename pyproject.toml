@@ -1,7 +1,7 @@
 [project]
 name = "scholar-mcp"
-version = "0.1.1"
-description = "MCP server for scientific paper search across OpenAlex, Semantic Scholar, and Scopus"
+version = "0.2.0"
+description = "MCP server for scientific paper search across OpenAlex, Semantic Scholar, Scopus, and SciX/NASA ADS"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
