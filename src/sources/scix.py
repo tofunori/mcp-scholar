@@ -85,7 +85,7 @@ class SciXSource(BaseSource):
 
         params = {
             "q": q,
-            "rows": min(limit, 200),  # Max ADS = 200
+            "rows": min(limit, 2000),  # Max ADS = 2000
             "fl": ",".join(self.PAPER_FIELDS),
             "sort": "citation_count desc",
         }
@@ -150,7 +150,7 @@ class SciXSource(BaseSource):
         # Requete citations
         params = {
             "q": f'citations(bibcode:"{paper.scix_bibcode}")',
-            "rows": min(limit, 200),
+            "rows": min(limit, 2000),
             "fl": ",".join(self.PAPER_FIELDS),
             "sort": "citation_count desc",
         }
@@ -183,7 +183,7 @@ class SciXSource(BaseSource):
         # Requete references
         params = {
             "q": f'references(bibcode:"{paper.scix_bibcode}")',
-            "rows": min(limit, 200),
+            "rows": min(limit, 2000),
             "fl": ",".join(self.PAPER_FIELDS),
             "sort": "citation_count desc",
         }
