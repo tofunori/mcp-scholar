@@ -14,6 +14,7 @@ class PaperSource(str, Enum):
     OPENALEX = "openalex"
     SEMANTIC_SCHOLAR = "semantic_scholar"
     SCOPUS = "scopus"
+    SCIX = "scix"
 
 
 @dataclass
@@ -26,6 +27,7 @@ class Paper:
     s2_paper_id: Optional[str] = None
     s2_corpus_id: Optional[int] = None
     scopus_eid: Optional[str] = None
+    scix_bibcode: Optional[str] = None
     arxiv_id: Optional[str] = None
     pmid: Optional[str] = None
 
@@ -87,6 +89,8 @@ class Paper:
             return f"oa:{self.openalex_id}"
         if self.scopus_eid:
             return f"scopus:{self.scopus_eid}"
+        if self.scix_bibcode:
+            return f"scix:{self.scix_bibcode}"
         # Fallback: hash du titre normalise + annee
         return f"title:{self._normalize_title()}:{self.year or 0}"
 
@@ -113,6 +117,7 @@ class Paper:
             "s2_paper_id": self.s2_paper_id,
             "s2_corpus_id": self.s2_corpus_id,
             "scopus_eid": self.scopus_eid,
+            "scix_bibcode": self.scix_bibcode,
             "arxiv_id": self.arxiv_id,
             "pmid": self.pmid,
             "title": self.title,

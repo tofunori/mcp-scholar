@@ -6,7 +6,7 @@ from typing import Optional
 
 from ..config import config
 from ..models import Paper
-from ..sources import OpenAlexSource, SemanticScholarSource, ScopusSource
+from ..sources import OpenAlexSource, SemanticScholarSource, ScopusSource, SciXSource
 from .deduplicator import Deduplicator
 
 logger = logging.getLogger(__name__)
@@ -20,10 +20,12 @@ class Orchestrator:
         openalex_mailto: Optional[str] = None,
         s2_api_key: Optional[str] = None,
         scopus_api_key: Optional[str] = None,
+        scix_api_key: Optional[str] = None,
     ):
         self.openalex_mailto = openalex_mailto or config.openalex_mailto
         self.s2_api_key = s2_api_key or config.s2_api_key
         self.scopus_api_key = scopus_api_key or config.scopus_api_key
+        self.scix_api_key = scix_api_key or config.scix_api_key
 
         self.deduplicator = Deduplicator(
             title_threshold=config.title_similarity_threshold
@@ -34,6 +36,7 @@ class Orchestrator:
             "openalex": self.openalex_mailto,
             "semantic_scholar": True,  # Toujours disponible
             "scopus": bool(self.scopus_api_key),
+            "scix": bool(self.scix_api_key),
         }
 
     def get_available_sources(self) -> list[str]:
@@ -92,6 +95,10 @@ class Orchestrator:
                 tasks.append(self._search_scopus(query, limit, year_min, year_max))
                 source_names.append("scopus")
 
+            elif source == "scix" and self.scix_api_key:
+                tasks.append(self._search_scix(query, limit, year_min, year_max))
+                source_names.append("scix")
+
         # Executer en parallele
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -136,6 +143,9 @@ class Orchestrator:
 
         if self.scopus_api_key:
             tasks.append(("scopus", self._get_scopus(paper_id)))
+
+        if self.scix_api_key:
+            tasks.append(("scix", self._get_scix(paper_id)))
 
         # Executer en parallele
         results = await asyncio.gather(
@@ -186,6 +196,10 @@ class Orchestrator:
                 tasks.append(self._get_citations_scopus(paper_id, limit))
                 source_names.append("scopus")
 
+            elif source == "scix" and self.scix_api_key:
+                tasks.append(self._get_citations_scix(paper_id, limit))
+                source_names.append("scix")
+
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         all_papers = []
@@ -226,6 +240,10 @@ class Orchestrator:
             elif source == "semantic_scholar":
                 tasks.append(self._get_references_s2(paper_id, limit))
                 source_names.append("semantic_scholar")
+
+            elif source == "scix" and self.scix_api_key:
+                tasks.append(self._get_references_scix(paper_id, limit))
+                source_names.append("scix")
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -305,4 +323,24 @@ class Orchestrator:
 
     async def _get_references_s2(self, paper_id: str, limit: int) -> list[Paper]:
         async with SemanticScholarSource(self.s2_api_key) as source:
+            return await source.get_references(paper_id, limit)
+
+    # --- Methodes privees SciX ---
+
+    async def _search_scix(
+        self, query: str, limit: int, year_min: Optional[int], year_max: Optional[int]
+    ) -> list[Paper]:
+        async with SciXSource(self.scix_api_key) as source:
+            return await source.search(query, limit, year_min, year_max)
+
+    async def _get_scix(self, paper_id: str) -> Optional[Paper]:
+        async with SciXSource(self.scix_api_key) as source:
+            return await source.get_by_id(paper_id)
+
+    async def _get_citations_scix(self, paper_id: str, limit: int) -> list[Paper]:
+        async with SciXSource(self.scix_api_key) as source:
+            return await source.get_citations(paper_id, limit)
+
+    async def _get_references_scix(self, paper_id: str, limit: int) -> list[Paper]:
+        async with SciXSource(self.scix_api_key) as source:
             return await source.get_references(paper_id, limit)
