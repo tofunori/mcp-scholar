@@ -36,6 +36,14 @@ class SemanticScholarSource(BaseSource):
             )
         super().__init__(limiter)
 
+    def _normalize_id(self, paper_id: str) -> str:
+        """Normalise un ID pour l'API S2."""
+        if paper_id.startswith("10."):
+            return f"DOI:{paper_id}"
+        elif paper_id.startswith("arXiv:") or paper_id.startswith("arxiv:"):
+            return f"ARXIV:{paper_id.split(':')[1]}"
+        return paper_id
+
     async def search(
         self,
         query: str,
@@ -76,12 +84,7 @@ class SemanticScholarSource(BaseSource):
 
     async def get_by_id(self, paper_id: str) -> Optional[Paper]:
         """Recupere un article par ID (DOI, S2 ID, ArXiv, etc.)."""
-        # Normaliser l'ID
-        if paper_id.startswith("10."):
-            paper_id = f"DOI:{paper_id}"
-        elif paper_id.startswith("arXiv:") or paper_id.startswith("arxiv:"):
-            paper_id = f"ARXIV:{paper_id.split(':')[1]}"
-
+        paper_id = self._normalize_id(paper_id)
         params = {"fields": self.PAPER_FIELDS}
 
         try:
@@ -160,9 +163,13 @@ class SemanticScholarSource(BaseSource):
         limit: int = 100,
     ) -> list[Paper]:
         """Recommandations basees sur SPECTER embeddings."""
+        # Normaliser les IDs
+        normalized_positive = [self._normalize_id(pid) for pid in positive_ids]
+        normalized_negative = [self._normalize_id(pid) for pid in (negative_ids or [])]
+
         payload = {
-            "positivePaperIds": positive_ids,
-            "negativePaperIds": negative_ids or [],
+            "positivePaperIds": normalized_positive,
+            "negativePaperIds": normalized_negative,
         }
 
         params = {
