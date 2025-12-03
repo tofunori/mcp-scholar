@@ -4,15 +4,24 @@ MCP server for searching scientific papers across multiple academic databases.
 
 ## Features
 
-- Multi-source search: OpenAlex, Semantic Scholar, Scopus
-- Automatic deduplication and metadata merging
-- Rate limiting with adaptive backoff
-- Citations and references retrieval
-- Similar papers recommendations (via SPECTER embeddings)
+- **Multi-source search**: OpenAlex, Semantic Scholar, Scopus, SciX/NASA ADS
+- **Automatic deduplication** and metadata merging across sources
+- **Rate limiting** with adaptive backoff per source
+- **Citations and references** retrieval
+- **Similar papers** recommendations via Semantic Scholar API
+
+## Supported Sources
+
+| Source | Documents | Coverage | API Key |
+|--------|-----------|----------|---------|
+| [OpenAlex](https://openalex.org/) | 250M+ | All disciplines | Email only |
+| [Semantic Scholar](https://www.semanticscholar.org/) | 200M+ | CS, Biomedical, General | Optional |
+| [Scopus](https://www.scopus.com/) | 90M+ | Peer-reviewed journals | Required |
+| [SciX/NASA ADS](https://scixplorer.org/) | 30M+ | Astrophysics, Earth science, Planetary | Required |
 
 ## Installation
 
-Requires Python 3.11+ and [uv](https://github.com/astral-sh/uv).
+Requires Python 3.13+ and [uv](https://github.com/astral-sh/uv).
 
 ```bash
 git clone https://github.com/tofunori/mcp-scholar.git
@@ -22,21 +31,26 @@ uv sync
 
 ## Configuration
 
-Create a `.env` file (or set environment variables):
+Create a `.env` file or set environment variables:
 
 ```bash
-# Required for OpenAlex polite pool (your email)
+# Required: OpenAlex polite pool (your email)
 OPENALEX_MAILTO=your.email@example.com
 
-# Optional: Scopus API key (get one at https://dev.elsevier.com/)
+# Optional: Scopus API key
+# Get one at https://dev.elsevier.com/
 SCOPUS_API_KEY=your_scopus_key
+
+# Optional: SciX/NASA ADS API key
+# Get one at https://ui.adsabs.harvard.edu/user/settings/token
+SCIX_API_KEY=your_scix_token
 ```
 
-Semantic Scholar works without an API key (1 req/sec rate limit).
+Semantic Scholar works without an API key (rate limited to 1 req/sec).
 
 ## Claude Code Setup
 
-Add to your `~/.claude.json`:
+Add to your `~/.claude.json` (Windows: `C:\Users\<user>\.claude.json`):
 
 ```json
 {
@@ -47,7 +61,8 @@ Add to your `~/.claude.json`:
       "args": ["--directory", "/path/to/mcp-scholar", "run", "python", "-m", "src.server"],
       "env": {
         "OPENALEX_MAILTO": "your.email@example.com",
-        "SCOPUS_API_KEY": "your_scopus_key"
+        "SCOPUS_API_KEY": "your_scopus_key",
+        "SCIX_API_KEY": "your_scix_token"
       }
     }
   }
@@ -58,25 +73,43 @@ Add to your `~/.claude.json`:
 
 | Tool | Description |
 |------|-------------|
-| `search_papers` | Search papers by keywords across all sources |
-| `get_paper` | Get paper details by DOI, OpenAlex ID, S2 ID, or Scopus EID |
+| `search_papers` | Search papers by keywords across all configured sources |
+| `get_paper` | Get paper details by DOI, OpenAlex ID, S2 ID, Scopus EID, or ADS bibcode |
 | `get_citations` | Get papers citing a given paper |
 | `get_references` | Get references (bibliography) of a paper |
-| `get_similar_papers` | Find similar papers using SPECTER embeddings |
-| `get_api_status` | Check API configuration and status |
+| `get_similar_papers` | Find similar papers (Semantic Scholar recommendations) |
+| `get_api_status` | Check API configuration and quotas |
 
 ## Usage Examples
 
-```
-# Search for papers
+```python
+# Search across all sources
 search_papers("glacier albedo remote sensing", limit=10)
 
+# Search specific sources
+search_papers("MERRA-2 reanalysis", sources=["scix", "openalex"])
+
+# Filter by year
+search_papers("black carbon snow", year_min=2020, year_max=2024)
+
 # Get paper by DOI
-get_paper("10.1038/s41586-021-03426-z")
+get_paper("10.1175/JCLI-D-16-0758.1")
 
 # Get citations
-get_citations("10.1038/s41586-021-03426-z", limit=50)
+get_citations("10.1175/JCLI-D-16-0758.1", limit=50)
+
+# Find similar papers
+get_similar_papers("10.1038/s41586-021-03426-z")
 ```
+
+## Rate Limits
+
+| Source | Rate Limit | Daily Limit |
+|--------|------------|-------------|
+| OpenAlex | 10 req/sec | Unlimited |
+| Semantic Scholar | 1 req/sec (no key) | Unlimited |
+| Scopus | 2 req/sec | ~20,000/week |
+| SciX/NASA ADS | 5 req/sec | 5,000/day |
 
 ## License
 
