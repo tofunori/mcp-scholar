@@ -50,6 +50,54 @@ Semantic Scholar works without an API key (rate limited to 1 req/sec).
 
 ## Claude Code Setup
 
+### Option 1: HTTP/SSE Server (Recommended)
+
+Run as a shared HTTP server to avoid duplicating processes across Claude sessions.
+
+**1. Start the HTTP server:**
+```bash
+uv run python -m src.server_http
+# Server runs on http://127.0.0.1:8323/sse
+```
+
+**2. Configure Claude Code** (`~/.claude.json`):
+```json
+{
+  "mcpServers": {
+    "scholar": {
+      "type": "sse",
+      "url": "http://127.0.0.1:8323/sse"
+    }
+  }
+}
+```
+
+**3. (Optional) Run as systemd service** (Linux):
+```bash
+# Create ~/.config/systemd/user/scholar-mcp.service
+[Unit]
+Description=Scholar MCP HTTP Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/mcp-scholar
+Environment="OPENALEX_MAILTO=your.email@example.com"
+Environment="SCOPUS_API_KEY=your_scopus_key"
+Environment="SCIX_API_KEY=your_scix_token"
+ExecStart=/path/to/uv run python -m src.server_http
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+
+# Enable and start
+systemctl --user daemon-reload
+systemctl --user enable --now scholar-mcp
+```
+
+### Option 2: Stdio (per-session)
+
 Add to your `~/.claude.json` (Windows: `C:\Users\<user>\.claude.json`):
 
 ```json
