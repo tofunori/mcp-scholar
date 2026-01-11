@@ -157,8 +157,8 @@ def main():
     print("Press Ctrl+C to stop")
     print("=" * 60)
 
-    logger.info("Demarrage scholar-mcp en mode HTTP/SSE...")
-    mcp.run(transport="sse", host="127.0.0.1", port=8323)
+    logger.info("Demarrage scholar-mcp en mode Streamable HTTP...")
+    mcp.run(transport="http", host="127.0.0.1", port=8323)
 
 
 if __name__ == "__main__":
