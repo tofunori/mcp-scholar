@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import httpx
 
-from ..models import Paper
+from ..models import Paper, Author
 from ..rate_limiting import RateLimiter
 
 
@@ -47,6 +47,21 @@ class BaseSource(ABC):
     async def get_references(self, paper_id: str, limit: int = 100) -> list[Paper]:
         """Recupere les references de cet article."""
         pass
+
+    async def get_author(self, author_id: str) -> Optional[Author]:
+        """Recupere un auteur par ID ou recherche par nom.
+
+        Accepte: nom d'auteur, OpenAlex ID (A...), S2 ID, ORCID, Scopus ID.
+        Implementation par defaut retourne None (non supportee).
+        """
+        return None
+
+    async def search_authors(self, query: str, limit: int = 10) -> list[Author]:
+        """Recherche d'auteurs par nom.
+
+        Implementation par defaut retourne liste vide.
+        """
+        return []
 
     async def _request(
         self,

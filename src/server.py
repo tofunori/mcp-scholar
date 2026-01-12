@@ -32,6 +32,17 @@ def get_orchestrator() -> Orchestrator:
     return orchestrator
 
 
+def _safe_int(value) -> int | None:
+    """Convertit une valeur en int de maniere securisee."""
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return None
+
+
+
 @server.list_tools()
 async def list_tools() -> list[Tool]:
     """Liste les outils disponibles."""
@@ -171,6 +182,33 @@ async def list_tools() -> list[Tool]:
                 "properties": {},
             },
         ),
+        Tool(
+            name="get_author",
+            description=(
+                "Recherche un auteur par nom ou recupere son profil par ID. "
+                "Accepte: nom d'auteur (recherche), OpenAlex ID (A...), "
+                "Semantic Scholar ID, ORCID (0000-...), ou Scopus Author ID. "
+                "Retourne le profil avec metriques (h-index, citations, publications)."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": (
+                            "Nom de l'auteur (recherche) ou identifiant "
+                            "(OpenAlex ID, S2 ID, ORCID, Scopus ID)"
+                        ),
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Nombre max de resultats pour la recherche par nom (defaut: 10)",
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
     ]
 
 
@@ -184,9 +222,9 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             papers, metadata = await orch.search(
                 query=arguments["query"],
                 sources=arguments.get("sources"),
-                limit=arguments.get("limit", 10),
-                year_min=arguments.get("year_min"),
-                year_max=arguments.get("year_max"),
+                limit=_safe_int(arguments.get("limit")) or 10,
+                year_min=_safe_int(arguments.get("year_min")),
+                year_max=_safe_int(arguments.get("year_max")),
             )
             return [TextContent(
                 type="text",
@@ -209,7 +247,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         elif name == "get_citations":
             papers, metadata = await orch.get_citations(
                 paper_id=arguments["paper_id"],
-                limit=arguments.get("limit", 50),
+                limit=_safe_int(arguments.get("limit")) or 50,
             )
             return [TextContent(
                 type="text",
@@ -219,7 +257,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         elif name == "get_references":
             papers, metadata = await orch.get_references(
                 paper_id=arguments["paper_id"],
-                limit=arguments.get("limit", 50),
+                limit=_safe_int(arguments.get("limit")) or 50,
             )
             return [TextContent(
                 type="text",
@@ -229,7 +267,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         elif name == "get_similar_papers":
             papers = await orch.get_similar_papers(
                 paper_id=arguments["paper_id"],
-                limit=arguments.get("limit", 10),
+                limit=_safe_int(arguments.get("limit")) or 10,
             )
             return [TextContent(
                 type="text",
@@ -240,6 +278,16 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(
                 type="text",
                 text=format_api_status(orch),
+            )]
+
+        elif name == "get_author":
+            authors, metadata = await orch.get_author(
+                author_query=arguments["query"],
+                limit=_safe_int(arguments.get("limit")) or 10,
+            )
+            return [TextContent(
+                type="text",
+                text=format_author_results(authors, metadata),
             )]
 
         else:
@@ -448,6 +496,76 @@ def format_api_status(orch: Orchestrator) -> str:
     lines.append(f"- S2 API key: {bool(orch.s2_api_key)}")
     lines.append(f"- Scopus API key: {bool(orch.scopus_api_key)}")
     lines.append(f"- SciX API key: {bool(orch.scix_api_key)}")
+
+    return "\n".join(lines)
+
+
+def format_author_results(authors: list, metadata: dict) -> str:
+    """Formate les resultats de recherche d'auteurs."""
+    query_type = metadata.get("query_type", "unknown")
+
+    if query_type == "id_lookup":
+        title = "## Profil auteur"
+    else:
+        title = "## Resultats de recherche d'auteurs"
+
+    lines = [
+        title,
+        "",
+        f"Requete: {metadata.get('query', '')}",
+        f"Type: {'Recherche par ID' if query_type == 'id_lookup' else 'Recherche par nom'}",
+        f"Sources: {', '.join(metadata.get('sources_queried', []))}",
+        f"Total: {metadata.get('total_results', 0)} auteur(s)",
+    ]
+
+    if metadata.get("duplicates_removed"):
+        lines.append(f"Doublons supprimes: {metadata['duplicates_removed']}")
+
+    lines.append("")
+
+    for i, author in enumerate(authors, 1):
+        lines.append(f"### {i}. {author.name}")
+
+        # Identifiants
+        ids = []
+        if author.orcid:
+            ids.append(f"ORCID: {author.orcid}")
+        if author.openalex_id:
+            ids.append(f"OpenAlex: {author.openalex_id}")
+        if author.s2_author_id:
+            ids.append(f"S2: {author.s2_author_id}")
+        if author.scopus_author_id:
+            ids.append(f"Scopus: {author.scopus_author_id}")
+        if ids:
+            lines.append(f"- **IDs**: {', '.join(ids)}")
+
+        # Affiliations
+        if author.affiliations:
+            lines.append(f"- **Affiliations**: {', '.join(author.affiliations[:3])}")
+
+        # Metriques
+        metrics = []
+        if author.h_index is not None:
+            metrics.append(f"h-index: {author.h_index}")
+        if author.citation_count is not None:
+            metrics.append(f"Citations: {author.citation_count:,}")
+        if author.paper_count is not None:
+            metrics.append(f"Publications: {author.paper_count:,}")
+        if metrics:
+            lines.append(f"- **Metriques**: {', '.join(metrics)}")
+
+        # Homepage
+        if author.homepage:
+            lines.append(f"- **Homepage**: {author.homepage}")
+
+        # Sources
+        if author.sources:
+            lines.append(f"- **Sources**: {', '.join(author.sources)}")
+
+        lines.append("")
+
+    if not authors:
+        lines.append("Aucun auteur trouve.")
 
     return "\n".join(lines)
 

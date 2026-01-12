@@ -1,4 +1,4 @@
-"""Driver OpenAlex pour la recherche d'articles."""
+"""Driver OpenAlex pour la recherche d'articles et auteurs."""
 
 from typing import Optional
 
@@ -55,10 +55,16 @@ class OpenAlexSource(BaseSource):
 
         # Construire les filtres
         filters = []
-        if year_min:
-            filters.append(f"publication_year:>{year_min - 1}")
-        if year_max:
-            filters.append(f"publication_year:<{year_max + 1}")
+        if year_min is not None:
+            try:
+                filters.append(f"publication_year:>{int(year_min) - 1}")
+            except (ValueError, TypeError):
+                pass
+        if year_max is not None:
+            try:
+                filters.append(f"publication_year:<{int(year_max) + 1}")
+            except (ValueError, TypeError):
+                pass
         if filters:
             params["filter"] = ",".join(filters)
 
@@ -215,3 +221,76 @@ class OpenAlexSource(BaseSource):
             ))
 
         return authors
+
+    # --- Methodes Auteur ---
+
+    AUTHOR_FIELDS = (
+        "id,display_name,orcid,works_count,cited_by_count,"
+        "affiliations,summary_stats,last_known_institutions"
+    )
+
+    async def search_authors(self, query: str, limit: int = 10) -> list[Author]:
+        """Recherche d'auteurs par nom."""
+        params = self._default_params()
+        params["search"] = query
+        params["per-page"] = min(limit, 50)
+        params["select"] = self.AUTHOR_FIELDS
+
+        response = await self._request("GET", f"{self.BASE_URL}/authors", params=params)
+        data = response.json()
+
+        return [self._parse_author(a) for a in data.get("results", [])]
+
+    async def get_author(self, author_id: str) -> Optional[Author]:
+        """Recupere un auteur par ID (OpenAlex ID, ORCID)."""
+        # Normaliser l'ID
+        if author_id.startswith("A"):
+            url = f"{self.BASE_URL}/authors/{author_id}"
+        elif author_id.startswith("https://orcid.org/"):
+            url = f"{self.BASE_URL}/authors/{author_id}"
+        elif author_id.startswith("0000-"):
+            # ORCID format
+            url = f"{self.BASE_URL}/authors/https://orcid.org/{author_id}"
+        else:
+            # Tenter comme OpenAlex ID
+            url = f"{self.BASE_URL}/authors/{author_id}"
+
+        params = self._default_params()
+        params["select"] = self.AUTHOR_FIELDS
+
+        try:
+            response = await self._request("GET", url, params=params)
+            data = response.json()
+            return self._parse_author(data)
+        except SourceError:
+            return None
+
+    def _parse_author(self, data: dict) -> Author:
+        """Convertit un auteur OpenAlex en Author."""
+        author_id = data.get("id", "").replace("https://openalex.org/", "")
+
+        # Extraire ORCID
+        orcid = data.get("orcid")
+        if orcid:
+            orcid = orcid.replace("https://orcid.org/", "")
+
+        # Affiliations depuis last_known_institutions
+        affiliations = []
+        for inst in data.get("last_known_institutions", []) or []:
+            if inst and inst.get("display_name"):
+                affiliations.append(inst["display_name"])
+
+        # Metriques
+        summary = data.get("summary_stats", {}) or {}
+        h_index = summary.get("h_index")
+
+        return Author(
+            name=data.get("display_name", "Unknown"),
+            openalex_id=author_id if author_id else None,
+            orcid=orcid,
+            affiliations=affiliations,
+            paper_count=data.get("works_count"),
+            citation_count=data.get("cited_by_count"),
+            h_index=h_index,
+            sources=["openalex"],
+        )

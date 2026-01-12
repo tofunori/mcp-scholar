@@ -5,7 +5,7 @@ import logging
 from typing import Optional
 
 from ..config import config
-from ..models import Paper
+from ..models import Paper, Author
 from ..sources import OpenAlexSource, SemanticScholarSource, ScopusSource, SciXSource
 from .deduplicator import Deduplicator
 
@@ -344,3 +344,208 @@ class Orchestrator:
     async def _get_references_scix(self, paper_id: str, limit: int) -> list[Paper]:
         async with SciXSource(self.scix_api_key) as source:
             return await source.get_references(paper_id, limit)
+
+    # --- Methodes Auteur ---
+
+    async def get_author(
+        self,
+        author_query: str,
+        limit: int = 10,
+    ) -> tuple[list[Author], dict]:
+        """
+        Recherche un auteur par nom ou ID.
+
+        Detecte automatiquement le type d'input:
+        - Nom d'auteur (recherche)
+        - OpenAlex ID (A...)
+        - Semantic Scholar ID (numerique)
+        - ORCID (0000-...)
+        - Scopus Author ID
+
+        Args:
+            author_query: Nom ou ID de l'auteur
+            limit: Nombre max de resultats pour la recherche par nom
+
+        Returns:
+            Tuple (liste auteurs, metadata)
+        """
+        metadata = {
+            "query": author_query,
+            "query_type": "unknown",
+            "sources_queried": [],
+            "results_per_source": {},
+        }
+
+        # Detecter le type d'input
+        if self._is_author_id(author_query):
+            # Lookup par ID
+            metadata["query_type"] = "id_lookup"
+            return await self._get_author_by_id(author_query, metadata)
+        else:
+            # Recherche par nom
+            metadata["query_type"] = "name_search"
+            return await self._search_authors_by_name(author_query, limit, metadata)
+
+    def _is_author_id(self, query: str) -> bool:
+        """Detecte si la query est un ID d'auteur."""
+        # OpenAlex author ID
+        if query.startswith("A") and len(query) > 5 and query[1:].isdigit():
+            return True
+        # ORCID
+        if query.startswith("0000-") or query.startswith("https://orcid.org/"):
+            return True
+        # Semantic Scholar ID (numerique pur)
+        if query.isdigit() and len(query) > 5:
+            return True
+        # Scopus Author ID (numerique)
+        if query.isdigit() and len(query) >= 10:
+            return True
+        return False
+
+    async def _get_author_by_id(
+        self,
+        author_id: str,
+        metadata: dict,
+    ) -> tuple[list[Author], dict]:
+        """Recupere un auteur par ID depuis plusieurs sources."""
+        tasks = []
+        source_names = []
+
+        if self.openalex_mailto:
+            tasks.append(self._get_author_openalex(author_id))
+            source_names.append("openalex")
+
+        tasks.append(self._get_author_s2(author_id))
+        source_names.append("semantic_scholar")
+
+        if self.scopus_api_key:
+            tasks.append(self._get_author_scopus(author_id))
+            source_names.append("scopus")
+
+        metadata["sources_queried"] = source_names
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        authors = []
+        for source_name, result in zip(source_names, results):
+            if isinstance(result, Author):
+                authors.append(result)
+                metadata["results_per_source"][source_name] = 1
+            else:
+                if isinstance(result, Exception):
+                    logger.debug(f"Erreur {source_name} pour {author_id}: {result}")
+                metadata["results_per_source"][source_name] = 0
+
+        # Fusionner les resultats si meme auteur trouve sur plusieurs sources
+        if len(authors) > 1:
+            authors = [self._merge_authors(authors)]
+
+        metadata["total_results"] = len(authors)
+        return authors, metadata
+
+    async def _search_authors_by_name(
+        self,
+        name: str,
+        limit: int,
+        metadata: dict,
+    ) -> tuple[list[Author], dict]:
+        """Recherche des auteurs par nom."""
+        tasks = []
+        source_names = []
+
+        if self.openalex_mailto:
+            tasks.append(self._search_authors_openalex(name, limit))
+            source_names.append("openalex")
+
+        tasks.append(self._search_authors_s2(name, limit))
+        source_names.append("semantic_scholar")
+
+        metadata["sources_queried"] = source_names
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        all_authors = []
+        for source_name, result in zip(source_names, results):
+            if isinstance(result, list):
+                all_authors.extend(result)
+                metadata["results_per_source"][source_name] = len(result)
+            else:
+                if isinstance(result, Exception):
+                    logger.warning(f"Erreur recherche auteurs {source_name}: {result}")
+                metadata["results_per_source"][source_name] = 0
+
+        # Dedupliquer par ORCID
+        authors = self._deduplicate_authors(all_authors)
+        metadata["total_results"] = len(authors)
+        metadata["duplicates_removed"] = len(all_authors) - len(authors)
+
+        return authors[:limit], metadata
+
+    def _deduplicate_authors(self, authors: list[Author]) -> list[Author]:
+        """Deduplique les auteurs par ORCID."""
+        seen_orcids = set()
+        unique = []
+
+        for author in authors:
+            if author.orcid:
+                if author.orcid in seen_orcids:
+                    # Fusionner avec l'existant
+                    for i, existing in enumerate(unique):
+                        if existing.orcid == author.orcid:
+                            unique[i] = self._merge_two_authors(existing, author)
+                            break
+                    continue
+                seen_orcids.add(author.orcid)
+            unique.append(author)
+
+        return unique
+
+    def _merge_authors(self, authors: list[Author]) -> Author:
+        """Fusionne plusieurs profils du meme auteur."""
+        if not authors:
+            return Author(name="Unknown")
+        if len(authors) == 1:
+            return authors[0]
+
+        result = authors[0]
+        for author in authors[1:]:
+            result = self._merge_two_authors(result, author)
+        return result
+
+    def _merge_two_authors(self, a1: Author, a2: Author) -> Author:
+        """Fusionne deux profils d'auteur."""
+        return Author(
+            name=a1.name or a2.name,
+            openalex_id=a1.openalex_id or a2.openalex_id,
+            s2_author_id=a1.s2_author_id or a2.s2_author_id,
+            scopus_author_id=a1.scopus_author_id or a2.scopus_author_id,
+            orcid=a1.orcid or a2.orcid,
+            affiliations=list(set(a1.affiliations + a2.affiliations))[:5],
+            paper_count=max(a1.paper_count or 0, a2.paper_count or 0) or None,
+            citation_count=max(a1.citation_count or 0, a2.citation_count or 0) or None,
+            h_index=max(a1.h_index or 0, a2.h_index or 0) or None,
+            homepage=a1.homepage or a2.homepage,
+            sources=list(set(a1.sources + a2.sources)),
+        )
+
+    # --- Methodes privees auteur ---
+
+    async def _get_author_openalex(self, author_id: str) -> Optional[Author]:
+        async with OpenAlexSource(self.openalex_mailto) as source:
+            return await source.get_author(author_id)
+
+    async def _get_author_s2(self, author_id: str) -> Optional[Author]:
+        async with SemanticScholarSource(self.s2_api_key) as source:
+            return await source.get_author(author_id)
+
+    async def _get_author_scopus(self, author_id: str) -> Optional[Author]:
+        async with ScopusSource(self.scopus_api_key) as source:
+            return await source.get_author(author_id)
+
+    async def _search_authors_openalex(self, name: str, limit: int) -> list[Author]:
+        async with OpenAlexSource(self.openalex_mailto) as source:
+            return await source.search_authors(name, limit)
+
+    async def _search_authors_s2(self, name: str, limit: int) -> list[Author]:
+        async with SemanticScholarSource(self.s2_api_key) as source:
+            return await source.search_authors(name, limit)

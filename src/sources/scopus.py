@@ -46,12 +46,16 @@ class ScopusSource(BaseSource):
         # Construire la requete Scopus
         scopus_query = f"TITLE-ABS-KEY({query})"
 
-        if year_min and year_max:
-            scopus_query += f" AND PUBYEAR > {year_min - 1} AND PUBYEAR < {year_max + 1}"
-        elif year_min:
-            scopus_query += f" AND PUBYEAR > {year_min - 1}"
-        elif year_max:
-            scopus_query += f" AND PUBYEAR < {year_max + 1}"
+        # Validation des annees avec conversion securisee
+        try:
+            if year_min is not None and year_max is not None:
+                scopus_query += f" AND PUBYEAR > {int(year_min) - 1} AND PUBYEAR < {int(year_max) + 1}"
+            elif year_min is not None:
+                scopus_query += f" AND PUBYEAR > {int(year_min) - 1}"
+            elif year_max is not None:
+                scopus_query += f" AND PUBYEAR < {int(year_max) + 1}"
+        except (ValueError, TypeError):
+            pass  # Ignorer les filtres d'annee invalides
 
         params = {
             "query": scopus_query,
@@ -311,3 +315,91 @@ class ScopusSource(BaseSource):
             return int(value)
         except (ValueError, TypeError):
             return None
+
+    # --- Methodes Auteur ---
+
+    AUTHOR_URL = "https://api.elsevier.com/content/author"
+
+    async def get_author(self, author_id: str) -> Optional[Author]:
+        """Recupere un auteur par Scopus Author ID ou ORCID."""
+        # Determiner le type d'ID
+        if author_id.startswith("0000-"):
+            # ORCID
+            url = f"{self.AUTHOR_URL}/orcid/{author_id}"
+        elif author_id.startswith("https://orcid.org/"):
+            orcid = author_id.replace("https://orcid.org/", "")
+            url = f"{self.AUTHOR_URL}/orcid/{orcid}"
+        else:
+            # Scopus Author ID
+            url = f"{self.AUTHOR_URL}/author_id/{author_id}"
+
+        params = {"view": "ENHANCED"}
+
+        try:
+            response = await self._request(
+                "GET",
+                url,
+                params=params,
+                headers=self._headers(),
+            )
+            data = response.json()
+
+            author_data = data.get("author-retrieval-response", [])
+            if not author_data:
+                return None
+
+            # L'API retourne une liste, prendre le premier
+            if isinstance(author_data, list):
+                author_data = author_data[0] if author_data else {}
+
+            return self._parse_author_response(author_data)
+
+        except SourceError:
+            return None
+
+    def _parse_author_response(self, data: dict) -> Author:
+        """Parse une reponse Author Retrieval Scopus."""
+        coredata = data.get("coredata", {}) or {}
+        profile = data.get("author-profile", {}) or {}
+
+        # Nom
+        preferred_name = profile.get("preferred-name", {}) or {}
+        name = preferred_name.get("indexed-name", "")
+        if not name:
+            name = f"{preferred_name.get('given-name', '')} {preferred_name.get('surname', '')}".strip()
+
+        # IDs
+        scopus_id = coredata.get("dc:identifier", "").replace("AUTHOR_ID:", "")
+        orcid = coredata.get("orcid")
+
+        # Affiliations (current)
+        affiliations = []
+        affil_current = profile.get("affiliation-current", {})
+        if affil_current:
+            affil_data = affil_current.get("affiliation", {})
+            if isinstance(affil_data, dict):
+                affil_name = affil_data.get("ip-doc", {}).get("afdispname")
+                if affil_name:
+                    affiliations.append(affil_name)
+            elif isinstance(affil_data, list):
+                for aff in affil_data[:3]:  # Max 3
+                    affil_name = aff.get("ip-doc", {}).get("afdispname")
+                    if affil_name:
+                        affiliations.append(affil_name)
+
+        # Metriques
+        h_index = None
+        metrics = data.get("h-index")
+        if metrics:
+            h_index = self._safe_int(metrics)
+
+        return Author(
+            name=name or "Unknown",
+            scopus_author_id=scopus_id if scopus_id else None,
+            orcid=orcid,
+            affiliations=affiliations,
+            paper_count=self._safe_int(coredata.get("document-count")),
+            citation_count=self._safe_int(coredata.get("cited-by-count")),
+            h_index=h_index,
+            sources=["scopus"],
+        )

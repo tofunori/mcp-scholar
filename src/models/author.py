@@ -24,6 +24,29 @@ class Author:
     citation_count: Optional[int] = None
     h_index: Optional[int] = None
 
+    # Infos supplementaires
+    homepage: Optional[str] = None
+    sources: list[str] = field(default_factory=list)
+
+    # Publications recentes (pour get_author)
+    recent_papers: list = field(default_factory=list)
+
+    def get_display_name(self) -> str:
+        """Retourne le nom d'affichage."""
+        return self.name
+
+    def get_primary_id(self) -> Optional[str]:
+        """Retourne l'identifiant principal (priorite: ORCID > OpenAlex > S2 > Scopus)."""
+        if self.orcid:
+            return f"ORCID:{self.orcid}"
+        if self.openalex_id:
+            return self.openalex_id
+        if self.s2_author_id:
+            return self.s2_author_id
+        if self.scopus_author_id:
+            return self.scopus_author_id
+        return None
+
     def to_dict(self) -> dict:
         """Convertit l'auteur en dictionnaire."""
         return {
@@ -36,4 +59,6 @@ class Author:
             "paper_count": self.paper_count,
             "citation_count": self.citation_count,
             "h_index": self.h_index,
+            "homepage": self.homepage,
+            "sources": self.sources,
         }

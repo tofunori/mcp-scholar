@@ -23,7 +23,9 @@ class SemanticScholarSource(BaseSource):
         "authors,fieldsOfStudy,isOpenAccess,openAccessPdf,tldr"
     )
 
-    def __init__(self, api_key: Optional[str] = None, limiter: Optional[RateLimiter] = None):
+    def __init__(
+        self, api_key: Optional[str] = None, limiter: Optional[RateLimiter] = None
+    ):
         # Rate limit: 1 req/sec (API publique sans cle)
         if limiter is None:
             limiter = RateLimiter(
@@ -32,7 +34,7 @@ class SemanticScholarSource(BaseSource):
                     requests_per_second=1.0,
                     daily_limit=None,
                     burst_size=1,
-                )
+                ),
             )
         super().__init__(limiter)
 
@@ -186,10 +188,7 @@ class SemanticScholarSource(BaseSource):
             )
             data = response.json()
 
-            return [
-                self._parse_paper(p)
-                for p in data.get("recommendedPapers", [])
-            ]
+            return [self._parse_paper(p) for p in data.get("recommendedPapers", [])]
 
         except SourceError:
             return []
@@ -247,9 +246,83 @@ class SemanticScholarSource(BaseSource):
             if not author_data:
                 continue
 
-            authors.append(Author(
-                name=author_data.get("name", "Unknown"),
-                s2_author_id=author_data.get("authorId"),
-            ))
+            authors.append(
+                Author(
+                    name=author_data.get("name", "Unknown"),
+                    s2_author_id=author_data.get("authorId"),
+                )
+            )
 
         return authors
+
+    # --- Methodes Auteur ---
+
+    AUTHOR_FIELDS = (
+        "authorId,name,url,affiliations,homepage,paperCount,"
+        "citationCount,hIndex,externalIds"
+    )
+
+    async def search_authors(self, query: str, limit: int = 10) -> list[Author]:
+        """Recherche d'auteurs par nom."""
+        params = {
+            "query": query,
+            "limit": min(limit, 100),
+            "fields": self.AUTHOR_FIELDS,
+        }
+
+        try:
+            response = await self._request(
+                "GET",
+                f"{self.BASE_URL}/author/search",
+                params=params,
+            )
+            data = response.json()
+            return [self._parse_author_full(a) for a in data.get("data", [])]
+        except SourceError:
+            return []
+
+    async def get_author(self, author_id: str) -> Optional[Author]:
+        """Recupere un auteur par ID (S2 ID, ORCID)."""
+        # Normaliser ORCID
+        if author_id.startswith("0000-"):
+            author_id = f"ORCID:{author_id}"
+        elif author_id.startswith("https://orcid.org/"):
+            author_id = f"ORCID:{author_id.replace('https://orcid.org/', '')}"
+
+        params = {"fields": self.AUTHOR_FIELDS}
+
+        try:
+            response = await self._request(
+                "GET",
+                f"{self.BASE_URL}/author/{author_id}",
+                params=params,
+            )
+            data = response.json()
+            return self._parse_author_full(data)
+        except SourceError:
+            return None
+
+    def _parse_author_full(self, data: dict) -> Author:
+        """Convertit un auteur S2 en Author (version complete)."""
+        external_ids = data.get("externalIds", {}) or {}
+        orcid = external_ids.get("ORCID")
+
+        # Affiliations
+        affiliations = []
+        for aff in data.get("affiliations") or []:
+            if isinstance(aff, str):
+                affiliations.append(aff)
+            elif isinstance(aff, dict) and aff.get("name"):
+                affiliations.append(aff["name"])
+
+        return Author(
+            name=data.get("name", "Unknown"),
+            s2_author_id=data.get("authorId"),
+            orcid=orcid,
+            affiliations=affiliations,
+            paper_count=data.get("paperCount"),
+            citation_count=data.get("citationCount"),
+            h_index=data.get("hIndex"),
+            homepage=data.get("homepage"),
+            sources=["semantic_scholar"],
+        )

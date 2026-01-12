@@ -104,8 +104,14 @@ class Deduplicator:
             return False
 
         # Annee doit correspondre si disponible
-        if p1.year and p2.year and abs(p1.year - p2.year) > 1:
-            return False
+        # S'assurer que les annees sont des entiers avant comparaison
+        try:
+            year1 = int(p1.year) if p1.year else None
+            year2 = int(p2.year) if p2.year else None
+            if year1 and year2 and abs(year1 - year2) > 1:
+                return False
+        except (ValueError, TypeError):
+            pass  # Si conversion echoue, ignorer le filtre d'annee
 
         # Normaliser les titres
         title1 = p1._normalize_title()
