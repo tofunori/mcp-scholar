@@ -13,6 +13,7 @@ class Config:
     s2_api_key: str
     scopus_api_key: str
     scix_api_key: str
+    core_api_key: str
 
     # OpenAlex (polite pool - email seulement)
     openalex_mailto: str
@@ -47,6 +48,7 @@ def load_config() -> Config:
         s2_api_key=os.getenv("S2_API_KEY", ""),
         scopus_api_key=os.getenv("SCOPUS_API_KEY", ""),
         scix_api_key=os.getenv("SCIX_API_KEY", ""),
+        core_api_key=os.getenv("CORE_API_KEY", ""),
         openalex_mailto=os.getenv("OPENALEX_MAILTO", ""),
         data_dir=Path(os.getenv("DATA_DIR", "./data")),
         cache_ttl=int(os.getenv("CACHE_TTL", "3600")),

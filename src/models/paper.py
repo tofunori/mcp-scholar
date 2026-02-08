@@ -15,6 +15,8 @@ class PaperSource(str, Enum):
     SEMANTIC_SCHOLAR = "semantic_scholar"
     SCOPUS = "scopus"
     SCIX = "scix"
+    CORE = "core"
+    CROSSREF = "crossref"
 
 
 @dataclass
@@ -28,6 +30,7 @@ class Paper:
     s2_corpus_id: Optional[int] = None
     scopus_eid: Optional[str] = None
     scix_bibcode: Optional[str] = None
+    core_id: Optional[str] = None
     arxiv_id: Optional[str] = None
     pmid: Optional[str] = None
 
@@ -91,6 +94,8 @@ class Paper:
             return f"scopus:{self.scopus_eid}"
         if self.scix_bibcode:
             return f"scix:{self.scix_bibcode}"
+        if self.core_id:
+            return f"core:{self.core_id}"
         # Fallback: hash du titre normalise + annee
         return f"title:{self._normalize_title()}:{self.year or 0}"
 
@@ -118,6 +123,7 @@ class Paper:
             "s2_corpus_id": self.s2_corpus_id,
             "scopus_eid": self.scopus_eid,
             "scix_bibcode": self.scix_bibcode,
+            "core_id": self.core_id,
             "arxiv_id": self.arxiv_id,
             "pmid": self.pmid,
             "title": self.title,

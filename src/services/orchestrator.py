@@ -6,7 +6,7 @@ from typing import Optional
 
 from ..config import config
 from ..models import Paper, Author
-from ..sources import OpenAlexSource, SemanticScholarSource, ScopusSource, SciXSource
+from ..sources import OpenAlexSource, SemanticScholarSource, ScopusSource, SciXSource, CORESource, CrossrefSource
 from .deduplicator import Deduplicator
 
 logger = logging.getLogger(__name__)
@@ -21,11 +21,13 @@ class Orchestrator:
         s2_api_key: Optional[str] = None,
         scopus_api_key: Optional[str] = None,
         scix_api_key: Optional[str] = None,
+        core_api_key: Optional[str] = None,
     ):
         self.openalex_mailto = openalex_mailto or config.openalex_mailto
         self.s2_api_key = s2_api_key or config.s2_api_key
         self.scopus_api_key = scopus_api_key or config.scopus_api_key
         self.scix_api_key = scix_api_key or config.scix_api_key
+        self.core_api_key = core_api_key or config.core_api_key
 
         self.deduplicator = Deduplicator(
             title_threshold=config.title_similarity_threshold
@@ -37,6 +39,8 @@ class Orchestrator:
             "semantic_scholar": True,  # Toujours disponible
             "scopus": bool(self.scopus_api_key),
             "scix": bool(self.scix_api_key),
+            "core": bool(self.core_api_key),
+            "crossref": self.openalex_mailto,  # Utilise le meme email pour polite pool
         }
 
     def get_available_sources(self) -> list[str]:
@@ -99,6 +103,14 @@ class Orchestrator:
                 tasks.append(self._search_scix(query, limit, year_min, year_max))
                 source_names.append("scix")
 
+            elif source == "core" and self.core_api_key:
+                tasks.append(self._search_core(query, limit, year_min, year_max))
+                source_names.append("core")
+
+            elif source == "crossref" and self.openalex_mailto:
+                tasks.append(self._search_crossref(query, limit, year_min, year_max))
+                source_names.append("crossref")
+
         # Executer en parallele
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -146,6 +158,12 @@ class Orchestrator:
 
         if self.scix_api_key:
             tasks.append(("scix", self._get_scix(paper_id)))
+
+        if self.core_api_key:
+            tasks.append(("core", self._get_core(paper_id)))
+
+        if self.openalex_mailto:
+            tasks.append(("crossref", self._get_crossref(paper_id)))
 
         # Executer en parallele
         results = await asyncio.gather(
@@ -200,6 +218,8 @@ class Orchestrator:
                 tasks.append(self._get_citations_scix(paper_id, limit))
                 source_names.append("scix")
 
+            # Note: CORE et Crossref ne supportent pas get_citations
+
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         all_papers = []
@@ -244,6 +264,12 @@ class Orchestrator:
             elif source == "scix" and self.scix_api_key:
                 tasks.append(self._get_references_scix(paper_id, limit))
                 source_names.append("scix")
+
+            elif source == "crossref" and self.openalex_mailto:
+                tasks.append(self._get_references_crossref(paper_id, limit))
+                source_names.append("crossref")
+
+            # Note: CORE ne supporte pas get_references
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -343,6 +369,34 @@ class Orchestrator:
 
     async def _get_references_scix(self, paper_id: str, limit: int) -> list[Paper]:
         async with SciXSource(self.scix_api_key) as source:
+            return await source.get_references(paper_id, limit)
+
+    # --- Methodes privees CORE ---
+
+    async def _search_core(
+        self, query: str, limit: int, year_min: Optional[int], year_max: Optional[int]
+    ) -> list[Paper]:
+        async with CORESource(self.core_api_key) as source:
+            return await source.search(query, limit, year_min, year_max)
+
+    async def _get_core(self, paper_id: str) -> Optional[Paper]:
+        async with CORESource(self.core_api_key) as source:
+            return await source.get_by_id(paper_id)
+
+    # --- Methodes privees Crossref ---
+
+    async def _search_crossref(
+        self, query: str, limit: int, year_min: Optional[int], year_max: Optional[int]
+    ) -> list[Paper]:
+        async with CrossrefSource(self.openalex_mailto) as source:
+            return await source.search(query, limit, year_min, year_max)
+
+    async def _get_crossref(self, paper_id: str) -> Optional[Paper]:
+        async with CrossrefSource(self.openalex_mailto) as source:
+            return await source.get_by_id(paper_id)
+
+    async def _get_references_crossref(self, paper_id: str, limit: int) -> list[Paper]:
+        async with CrossrefSource(self.openalex_mailto) as source:
             return await source.get_references(paper_id, limit)
 
     # --- Methodes Auteur ---
