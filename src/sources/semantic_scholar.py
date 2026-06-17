@@ -36,14 +36,15 @@ class SemanticScholarSource(BaseSource):
 
         if limiter is None:
             if self.api_key:
-                # Avec cle: quota plus eleve (S2 autorise ~1 req/s soutenu mais
-                # tolere des rafales bien plus larges sur compte authentifie).
+                # Avec cle: quota AUTHENTIFIE dedie (fiabilite), PAS un debit plus
+                # eleve. L'email d'approbation S2 precise: 1 req/s CUMULE sur tous
+                # les endpoints -> regler SOUS le seuil. On vise 0.9 req/s, burst 1.
                 limiter = RateLimiter(
                     "semantic_scholar",
                     RateLimitConfig(
-                        requests_per_second=10.0,
+                        requests_per_second=0.9,
                         daily_limit=None,
-                        burst_size=10,
+                        burst_size=1,
                     ),
                 )
             else:
