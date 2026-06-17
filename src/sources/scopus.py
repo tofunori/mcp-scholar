@@ -60,7 +60,11 @@ class ScopusSource(BaseSource):
         params = {
             "query": scopus_query,
             "count": min(limit, 25),  # Scopus limite a 25 par page sans pagination
-            "view": "COMPLETE",
+            # STANDARD: accessible avec une cle API de base. COMPLETE exige des
+            # droits d'abonne institutionnel (sinon 401 AUTHORIZATION_ERROR ->
+            # 0 resultat silencieux). STANDARD omet l'abstract (dc:description),
+            # ce qui est acceptable: le reranker retombe sur le titre.
+            "view": "STANDARD",
         }
 
         try:
