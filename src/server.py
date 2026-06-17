@@ -65,7 +65,8 @@ async def list_tools() -> list[Tool]:
                         "type": "array",
                         "items": {"type": "string"},
                         "description": (
-                            "Sources a interroger: openalex, semantic_scholar, scopus, scix. "
+                            "Sources a interroger: openalex, semantic_scholar, scopus, "
+                            "scix, core, crossref, europe_pmc. "
                             "Par defaut: toutes les sources configurees."
                         ),
                     },
@@ -486,16 +487,17 @@ def format_api_status(orch: Orchestrator) -> str:
 
     sources = orch.get_available_sources()
 
-    for source in ["openalex", "semantic_scholar", "scopus", "scix"]:
+    for source in ["openalex", "semantic_scholar", "scopus", "scix", "core", "crossref", "europe_pmc"]:
         status = "OK" if source in sources else "Non configure"
         lines.append(f"- **{source}**: {status}")
 
     lines.append("")
     lines.append("### Configuration")
     lines.append(f"- OpenAlex mailto: {bool(orch.openalex_mailto)}")
-    lines.append(f"- S2 API key: {bool(orch.s2_api_key)}")
+    lines.append(f"- S2 API key (x-api-key actif): {bool(orch.s2_api_key)}")
     lines.append(f"- Scopus API key: {bool(orch.scopus_api_key)}")
     lines.append(f"- SciX API key: {bool(orch.scix_api_key)}")
+    lines.append(f"- CORE API key: {bool(orch.core_api_key)}")
 
     return "\n".join(lines)
 

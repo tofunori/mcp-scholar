@@ -5,6 +5,7 @@ from .scopus import ScopusSource
 from .scix import SciXSource
 from .core import CORESource
 from .crossref import CrossrefSource
+from .europepmc import EuropePMCSource
 
 __all__ = [
     "BaseSource",
@@ -14,4 +15,5 @@ __all__ = [
     "SciXSource",
     "CORESource",
     "CrossrefSource",
+    "EuropePMCSource",
 ]

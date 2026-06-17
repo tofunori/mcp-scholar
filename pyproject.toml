@@ -10,6 +10,8 @@ dependencies = [
     "fastmcp>=2.0.0",
     "pydantic>=2.12.5",
     "python-dotenv>=1.2.1",
+    "rank-bm25>=0.2.2",
+    "nltk>=3.8",
 ]
 
 [project.scripts]

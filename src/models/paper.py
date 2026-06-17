@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 import re
+import unicodedata
 
 from .author import Author
 
@@ -17,6 +18,7 @@ class PaperSource(str, Enum):
     SCIX = "scix"
     CORE = "core"
     CROSSREF = "crossref"
+    EUROPE_PMC = "europe_pmc"
 
 
 @dataclass
@@ -33,6 +35,8 @@ class Paper:
     core_id: Optional[str] = None
     arxiv_id: Optional[str] = None
     pmid: Optional[str] = None
+    pmcid: Optional[str] = None
+    europepmc_id: Optional[str] = None
 
     # Metadonnees essentielles
     title: str = ""
@@ -96,14 +100,40 @@ class Paper:
             return f"scix:{self.scix_bibcode}"
         if self.core_id:
             return f"core:{self.core_id}"
+        if self.pmid:
+            return f"pmid:{self.pmid}"
+        if self.europepmc_id:
+            return f"epmc:{self.europepmc_id}"
         # Fallback: hash du titre normalise + annee
         return f"title:{self._normalize_title()}:{self.year or 0}"
 
+    # Petit ensemble de mots vides anglais (stdlib uniquement, sans dependance)
+    _TITLE_STOPWORDS = frozenset({
+        "a", "an", "the", "of", "on", "in", "for", "and", "or", "to",
+        "with", "from", "by", "at", "as", "is", "are", "be", "into",
+    })
+
     def _normalize_title(self) -> str:
-        """Normalise le titre pour comparaison."""
-        title = self.title.lower().strip()
-        title = re.sub(r'[^\w\s]', '', title)
-        return title[:100]
+        """Normalise le titre pour comparaison.
+
+        - Normalisation Unicode NFKD + suppression des diacritiques (cafe == cafe)
+        - minuscules
+        - suppression de la ponctuation
+        - retrait d'un petit ensemble de mots vides anglais
+        - espaces effondres
+        - pas de troncature (les titres longs restent comparables)
+        """
+        if not self.title:
+            return ""
+        # NFKD + suppression des marques diacritiques -> ASCII-pliable
+        title = unicodedata.normalize("NFKD", self.title)
+        title = "".join(c for c in title if not unicodedata.combining(c))
+        title = title.lower().strip()
+        # Supprimer la ponctuation (garde lettres/chiffres/espaces)
+        title = re.sub(r"[^\w\s]", " ", title)
+        # Retirer les mots vides puis effondrer les espaces
+        tokens = [t for t in title.split() if t not in self._TITLE_STOPWORDS]
+        return " ".join(tokens)
 
     def get_display_authors(self, max_authors: int = 3) -> str:
         """Retourne une chaine d'auteurs pour affichage."""
@@ -126,6 +156,8 @@ class Paper:
             "core_id": self.core_id,
             "arxiv_id": self.arxiv_id,
             "pmid": self.pmid,
+            "pmcid": self.pmcid,
+            "europepmc_id": self.europepmc_id,
             "title": self.title,
             "authors": [a.to_dict() for a in self.authors],
             "year": self.year,

@@ -1,10 +1,13 @@
 """Driver OpenAlex pour la recherche d'articles et auteurs."""
 
+import logging
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
 from ..rate_limiting import RateLimiter, RateLimitConfig
 from .base import BaseSource, SourceError
+
+logger = logging.getLogger(__name__)
 
 
 class OpenAlexSource(BaseSource):
@@ -71,7 +74,23 @@ class OpenAlexSource(BaseSource):
         response = await self._request("GET", f"{self.BASE_URL}/works", params=params)
         data = response.json()
 
-        return [self._parse_work(work) for work in data.get("results", [])]
+        return self._parse_works(data.get("results", []))
+
+    def _parse_works(self, works: list[dict]) -> list[Paper]:
+        """Parse une liste de works en filtrant les None et les records corrompus.
+
+        Un seul mauvais record ne doit pas faire echouer tout le batch.
+        """
+        papers: list[Paper] = []
+        for work in works:
+            try:
+                paper = self._parse_work(work)
+            except Exception as exc:  # noqa: BLE001 - on saute le record fautif
+                logger.warning("OpenAlex: skipping malformed work record: %s", exc)
+                continue
+            if paper is not None:
+                papers.append(paper)
+        return papers
 
     async def get_by_id(self, paper_id: str) -> Optional[Paper]:
         """Recupere un article par DOI ou OpenAlex ID."""
@@ -108,7 +127,7 @@ class OpenAlexSource(BaseSource):
         response = await self._request("GET", f"{self.BASE_URL}/works", params=params)
         data = response.json()
 
-        return [self._parse_work(work) for work in data.get("results", [])]
+        return self._parse_works(data.get("results", []))
 
     async def get_references(self, paper_id: str, limit: int = 100) -> list[Paper]:
         """Recupere les references de cet article."""
@@ -136,12 +155,17 @@ class OpenAlexSource(BaseSource):
         response = await self._request("GET", f"{self.BASE_URL}/works", params=params)
         data = response.json()
 
-        return [self._parse_work(work) for work in data.get("results", [])]
+        return self._parse_works(data.get("results", []))
 
-    def _parse_work(self, work: dict) -> Paper:
+    def _parse_work(self, work: dict) -> Optional[Paper]:
         """Convertit un work OpenAlex en Paper."""
+        # Skip papers sans titre (coherent avec les autres adapters)
+        title = work.get("title") or ""
+        if not title:
+            return None
+
         # Extraire l'ID court
-        openalex_id = work.get("id", "").replace("https://openalex.org/", "")
+        openalex_id = (work.get("id") or "").replace("https://openalex.org/", "")
 
         # Extraire le DOI
         doi = work.get("doi")
@@ -162,7 +186,7 @@ class OpenAlexSource(BaseSource):
         return Paper(
             openalex_id=openalex_id,
             doi=doi,
-            title=work.get("title", ""),
+            title=title,
             year=work.get("publication_year"),
             publication_date=work.get("publication_date"),
             abstract=abstract,
@@ -211,7 +235,7 @@ class OpenAlexSource(BaseSource):
                 if inst and inst.get("display_name"):
                     affiliations.append(inst["display_name"])
 
-            author_id = author_data.get("id", "").replace("https://openalex.org/", "")
+            author_id = (author_data.get("id") or "").replace("https://openalex.org/", "")
 
             authors.append(Author(
                 name=author_data.get("display_name", "Unknown"),
@@ -267,7 +291,7 @@ class OpenAlexSource(BaseSource):
 
     def _parse_author(self, data: dict) -> Author:
         """Convertit un auteur OpenAlex en Author."""
-        author_id = data.get("id", "").replace("https://openalex.org/", "")
+        author_id = (data.get("id") or "").replace("https://openalex.org/", "")
 
         # Extraire ORCID
         orcid = data.get("orcid")

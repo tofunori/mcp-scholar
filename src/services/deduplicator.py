@@ -1,9 +1,43 @@
 """Deduplication d'articles multi-sources."""
 
+import re
 from difflib import SequenceMatcher
 from typing import Optional
 
 from ..models import Paper
+
+
+def normalize_doi(doi: Optional[str]) -> str:
+    """Normalise un DOI pour la deduplication.
+
+    - minuscules + trim
+    - retire un prefixe URL eventuel (https://doi.org/, doi:)
+    - effondre les variantes preprint EGU/Copernicus vers une forme finale:
+        * retire les suffixes de commentaire referee/auteur/court:
+          -rcN, -acN, -scN, -ccN (ex. tc-2020-87-rc1 -> tc-2020-87)
+        * retire le prefixe de depot 'egusphere-' (ex. egusphere-2023-1 -> 2023-1)
+
+    Note: la forme preprint (ex. tc-2020-87) et la forme publiee
+    (ex. tc-14-3249-2020) restent des chaines DOI distinctes; leur fusion
+    repose sur le repli titre-fuzzy (titre + auteurs/annee).
+    """
+    if not doi:
+        return ""
+    d = doi.lower().strip()
+    # Retirer prefixes URL / scheme
+    d = re.sub(r"^https?://(dx\.)?doi\.org/", "", d)
+    d = re.sub(r"^doi:", "", d)
+    d = d.strip()
+    # Variantes preprint EGU/Copernicus: limiter STRICTEMENT au registrant
+    # 10.5194/ pour ne pas mutiler un DOI publie qui finirait par -ccN/-scN
+    # chez un autre editeur, ni fabriquer une cle 10.xxxx/<annee>-<n> inexistante.
+    if d.startswith("10.5194/"):
+        # Retirer le prefixe de depot egusphere des preprints
+        d = re.sub(r"^10\.5194/egusphere-", "10.5194/", d)
+        # Retirer les suffixes de commentaire referee/auteur/short/community
+        # (un ou plusieurs, ex. -rc1, -rc2, -ac1, -sc1, -cc1)
+        d = re.sub(r"(?:-(?:rc|ac|sc|cc)\d+)+$", "", d)
+    return d
 
 
 class Deduplicator:
@@ -50,13 +84,27 @@ class Deduplicator:
 
         # Niveau 1: DOI (priorite maximale)
         if paper.doi:
-            doi_normalized = paper.doi.lower().strip()
+            doi_normalized = normalize_doi(paper.doi)
             doi_key = f"doi:{doi_normalized}"
 
-            # Verifier si un article existant a ce DOI
+            # Verifier si un article existant a ce DOI (normalise: les variantes
+            # preprint EGU -rc/-ac/-sc/-cc et egusphere- s'effondrent ici)
             for key, group in existing.items():
                 for p in group:
-                    if p.doi and p.doi.lower().strip() == doi_normalized:
+                    if p.doi and normalize_doi(p.doi) == doi_normalized:
+                        return key
+
+            # Repli preprint<->publie: un DOI distinct peut tout de meme
+            # designer le meme article (ex. preprint tc-2020-87 vs publie
+            # tc-14-3249-2020). Garde STRICT pour eviter de sur-fusionner des
+            # articles distincts (ex. Part I / Part II du meme auteur, meme
+            # annee): on EXIGE un chevauchement de noms d'auteurs ET une tres
+            # forte similarite de titre (>=0.95, plus severe que le seuil fuzzy).
+            for key, group in existing.items():
+                for p in group:
+                    if self._authors_overlap(paper, p) and self._is_title_match(
+                        paper, p, threshold=0.95
+                    ):
                         return key
 
             return doi_key
@@ -98,8 +146,16 @@ class Deduplicator:
         # Nouvelle entree
         return paper.get_canonical_id()
 
-    def _is_title_match(self, p1: Paper, p2: Paper) -> bool:
-        """Verifie si deux articles ont des titres similaires."""
+    def _is_title_match(
+        self, p1: Paper, p2: Paper, threshold: Optional[float] = None
+    ) -> bool:
+        """Verifie si deux articles ont des titres similaires.
+
+        threshold: seuil de similarite a utiliser (defaut: self.title_threshold).
+        Un appelant peut exiger un seuil plus severe (ex. fusion cross-DOI).
+        """
+        if threshold is None:
+            threshold = self.title_threshold
         if not p1.title or not p2.title:
             return False
 
@@ -121,7 +177,44 @@ class Deduplicator:
             return False
 
         ratio = SequenceMatcher(None, title1, title2).ratio()
-        return ratio >= self.title_threshold
+        return ratio >= threshold
+
+    @staticmethod
+    def _author_surnames(paper: Paper) -> set[str]:
+        """Extrait l'ensemble des noms de famille (minuscules) d'un article."""
+        surnames: set[str] = set()
+        for a in getattr(paper, "authors", None) or []:
+            name = getattr(a, "name", None) or ""
+            name = name.strip()
+            if not name:
+                continue
+            # "Nom, Prenom" -> Nom ; sinon dernier token de "Prenom Nom"
+            if "," in name:
+                surname = name.split(",", 1)[0]
+            else:
+                surname = name.split()[-1]
+            surname = surname.strip().lower()
+            if surname:
+                surnames.add(surname)
+        return surnames
+
+    def _authors_overlap(self, p1: Paper, p2: Paper) -> bool:
+        """Vrai si les deux articles partagent au moins un nom de famille."""
+        s1 = self._author_surnames(p1)
+        s2 = self._author_surnames(p2)
+        if not s1 or not s2:
+            return False
+        return bool(s1 & s2)
+
+    @staticmethod
+    def _same_year(p1: Paper, p2: Paper) -> bool:
+        """Vrai si les deux articles ont la meme annee (entiere)."""
+        try:
+            y1 = int(p1.year) if p1.year else None
+            y2 = int(p2.year) if p2.year else None
+        except (ValueError, TypeError):
+            return False
+        return y1 is not None and y2 is not None and y1 == y2
 
     def find_duplicates(self, papers: list[Paper]) -> list[list[Paper]]:
         """

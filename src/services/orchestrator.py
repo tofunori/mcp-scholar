@@ -6,8 +6,9 @@ from typing import Optional
 
 from ..config import config
 from ..models import Paper, Author
-from ..sources import OpenAlexSource, SemanticScholarSource, ScopusSource, SciXSource, CORESource, CrossrefSource
+from ..sources import OpenAlexSource, SemanticScholarSource, ScopusSource, SciXSource, CORESource, CrossrefSource, EuropePMCSource
 from .deduplicator import Deduplicator
+from .reranker import rerank, reranker_available
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class Orchestrator:
             "scix": bool(self.scix_api_key),
             "core": bool(self.core_api_key),
             "crossref": self.openalex_mailto,  # Utilise le meme email pour polite pool
+            "europe_pmc": True,  # Sans cle (email optionnel pour contact poli)
         }
 
     def get_available_sources(self) -> list[str]:
@@ -111,6 +113,10 @@ class Orchestrator:
                 tasks.append(self._search_crossref(query, limit, year_min, year_max))
                 source_names.append("crossref")
 
+            elif source == "europe_pmc":
+                tasks.append(self._search_europepmc(query, limit, year_min, year_max))
+                source_names.append("europe_pmc")
+
         # Executer en parallele
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -139,6 +145,12 @@ class Orchestrator:
         else:
             papers = all_papers
 
+        # Reranker BM25 par pertinence vis-a-vis de la requete (apres dedup).
+        # On reordonne le jeu complet SANS le tronquer: 'limit' reste un plafond
+        # PAR SOURCE (contrat public inchange); le rerank ne fait que classer.
+        papers = rerank(query, papers)
+        metadata["reranked"] = reranker_available()
+
         metadata["total_results"] = len(papers)
 
         return papers, metadata
@@ -164,6 +176,8 @@ class Orchestrator:
 
         if self.openalex_mailto:
             tasks.append(("crossref", self._get_crossref(paper_id)))
+
+        tasks.append(("europe_pmc", self._get_europepmc(paper_id)))
 
         # Executer en parallele
         results = await asyncio.gather(
@@ -398,6 +412,18 @@ class Orchestrator:
     async def _get_references_crossref(self, paper_id: str, limit: int) -> list[Paper]:
         async with CrossrefSource(self.openalex_mailto) as source:
             return await source.get_references(paper_id, limit)
+
+    # --- Methodes privees Europe PMC ---
+
+    async def _search_europepmc(
+        self, query: str, limit: int, year_min: Optional[int], year_max: Optional[int]
+    ) -> list[Paper]:
+        async with EuropePMCSource(self.openalex_mailto) as source:
+            return await source.search(query, limit, year_min, year_max)
+
+    async def _get_europepmc(self, paper_id: str) -> Optional[Paper]:
+        async with EuropePMCSource(self.openalex_mailto) as source:
+            return await source.get_by_id(paper_id)
 
     # --- Methodes Auteur ---
 

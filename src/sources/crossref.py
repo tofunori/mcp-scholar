@@ -66,11 +66,13 @@ class CrossrefSource(BaseSource):
             Liste de Papers
         """
         params = self._default_params()
-        params["query"] = query
+        params["query.bibliographic"] = query
+        params["sort"] = "relevance"
+        params["order"] = "desc"
         params["rows"] = min(limit, 100)  # Crossref max 1000, mais on limite
 
-        # Filtres de date
-        filters = []
+        # Filtres : type article + dates
+        filters = ["type:journal-article"]
         if year_min is not None:
             filters.append(f"from-pub-date:{year_min}")
         if year_max is not None:
@@ -169,6 +171,11 @@ class CrossrefSource(BaseSource):
             Paper ou None si donnees invalides
         """
         if not work:
+            return None
+
+        # Ecarter les stubs non-articles (reviewer-comments EGU -rc1/-rc2, etc.)
+        work_type = work.get("type")
+        if work_type in {"peer-review", "other", "component", "grant"}:
             return None
 
         # Extraire le titre (liste dans Crossref)

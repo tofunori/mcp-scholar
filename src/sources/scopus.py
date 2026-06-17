@@ -369,7 +369,7 @@ class ScopusSource(BaseSource):
             name = f"{preferred_name.get('given-name', '')} {preferred_name.get('surname', '')}".strip()
 
         # IDs
-        scopus_id = coredata.get("dc:identifier", "").replace("AUTHOR_ID:", "")
+        scopus_id = (coredata.get("dc:identifier") or "").replace("AUTHOR_ID:", "")
         orcid = coredata.get("orcid")
 
         # Affiliations (current)

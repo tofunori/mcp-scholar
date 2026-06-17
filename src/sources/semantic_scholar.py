@@ -1,5 +1,6 @@
 """Driver Semantic Scholar pour la recherche d'articles."""
 
+import os
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
@@ -26,17 +27,42 @@ class SemanticScholarSource(BaseSource):
     def __init__(
         self, api_key: Optional[str] = None, limiter: Optional[RateLimiter] = None
     ):
-        # Rate limit: 1 req/sec (API publique sans cle)
+        # Cle API: argument explicite, sinon variable d'environnement.
+        self.api_key = (
+            api_key
+            or os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
+            or os.environ.get("S2_API_KEY")
+        )
+
         if limiter is None:
-            limiter = RateLimiter(
-                "semantic_scholar",
-                RateLimitConfig(
-                    requests_per_second=1.0,
-                    daily_limit=None,
-                    burst_size=1,
-                ),
-            )
+            if self.api_key:
+                # Avec cle: quota plus eleve (S2 autorise ~1 req/s soutenu mais
+                # tolere des rafales bien plus larges sur compte authentifie).
+                limiter = RateLimiter(
+                    "semantic_scholar",
+                    RateLimitConfig(
+                        requests_per_second=10.0,
+                        daily_limit=None,
+                        burst_size=10,
+                    ),
+                )
+            else:
+                # Sans cle: API publique limitee a 1 req/sec.
+                limiter = RateLimiter(
+                    "semantic_scholar",
+                    RateLimitConfig(
+                        requests_per_second=1.0,
+                        daily_limit=None,
+                        burst_size=1,
+                    ),
+                )
         super().__init__(limiter)
+
+    def _auth_headers(self) -> Optional[dict]:
+        """En-tetes d'authentification S2 (x-api-key) si une cle est presente."""
+        if self.api_key:
+            return {"x-api-key": self.api_key}
+        return None
 
     def _normalize_id(self, paper_id: str) -> str:
         """Normalise un ID pour l'API S2."""
@@ -78,6 +104,7 @@ class SemanticScholarSource(BaseSource):
         response = await self._request(
             "GET",
             f"{self.BASE_URL}/paper/search",
+            headers=self._auth_headers(),
             params=params,
         )
         data = response.json()
@@ -93,6 +120,7 @@ class SemanticScholarSource(BaseSource):
             response = await self._request(
                 "GET",
                 f"{self.BASE_URL}/paper/{paper_id}",
+                headers=self._auth_headers(),
                 params=params,
             )
             data = response.json()
@@ -115,6 +143,7 @@ class SemanticScholarSource(BaseSource):
             response = await self._request(
                 "GET",
                 f"{self.BASE_URL}/paper/{paper_id}/citations",
+                headers=self._auth_headers(),
                 params=params,
             )
             data = response.json()
@@ -144,6 +173,7 @@ class SemanticScholarSource(BaseSource):
             response = await self._request(
                 "GET",
                 f"{self.BASE_URL}/paper/{paper_id}/references",
+                headers=self._auth_headers(),
                 params=params,
             )
             data = response.json()
@@ -183,6 +213,7 @@ class SemanticScholarSource(BaseSource):
             response = await self._request(
                 "POST",
                 f"{self.RECOMMENDATIONS_URL}/papers/",
+                headers=self._auth_headers(),
                 json=payload,
                 params=params,
             )
@@ -274,6 +305,7 @@ class SemanticScholarSource(BaseSource):
             response = await self._request(
                 "GET",
                 f"{self.BASE_URL}/author/search",
+                headers=self._auth_headers(),
                 params=params,
             )
             data = response.json()
@@ -295,6 +327,7 @@ class SemanticScholarSource(BaseSource):
             response = await self._request(
                 "GET",
                 f"{self.BASE_URL}/author/{author_id}",
+                headers=self._auth_headers(),
                 params=params,
             )
             data = response.json()

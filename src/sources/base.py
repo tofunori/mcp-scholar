@@ -1,8 +1,50 @@
 """Classe abstraite pour les sources d'articles."""
 
+import asyncio
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Optional
 import httpx
+
+# Borne superieure raisonnable pour un Retry-After (secondes)
+MAX_RETRY_AFTER = 120.0
+DEFAULT_RETRY_AFTER = 60.0
+
+
+def parse_retry_after(value: Optional[str]) -> float:
+    """Interprete un en-tete Retry-After (RFC 7231) de facon robuste.
+
+    Deux formes sont permises:
+      - delay-seconds: un entier/flottant ("120")
+      - HTTP-date: une date ("Fri, 31 Dec 1999 23:59:59 GMT")
+
+    Retourne un nombre de secondes, borne a [0, MAX_RETRY_AFTER].
+    En cas d'echec de parsing, retourne DEFAULT_RETRY_AFTER.
+    """
+    if value is None:
+        seconds = DEFAULT_RETRY_AFTER
+    else:
+        try:
+            seconds = float(value)
+        except (TypeError, ValueError):
+            try:
+                retry_dt = parsedate_to_datetime(value)
+                if retry_dt is None:
+                    raise ValueError("date non interpretable")
+                # parsedate_to_datetime peut retourner un datetime naif
+                if retry_dt.tzinfo is None:
+                    retry_dt = retry_dt.replace(tzinfo=timezone.utc)
+                seconds = (retry_dt - datetime.now(timezone.utc)).total_seconds()
+            except (TypeError, ValueError):
+                seconds = DEFAULT_RETRY_AFTER
+
+    # Borner a [0, MAX_RETRY_AFTER]
+    if seconds < 0:
+        seconds = 0.0
+    if seconds > MAX_RETRY_AFTER:
+        seconds = MAX_RETRY_AFTER
+    return seconds
 
 from ..models import Paper, Author
 from ..rate_limiting import RateLimiter
@@ -71,26 +113,39 @@ class BaseSource(ABC):
         params: Optional[dict] = None,
         json: Optional[dict] = None,
     ) -> httpx.Response:
-        """Execute une requete avec rate limiting."""
-        await self.limiter.acquire()
+        """Execute une requete avec rate limiting.
 
+        Sur un 429, attend le delai Retry-After (durci) et reessaie UNE fois.
+        Un second 429 leve une SourceError.
+        """
         try:
-            response = await self.client.request(
-                method,
-                url,
-                headers=headers,
-                params=params,
-                json=json,
-            )
+            for attempt in range(2):  # tentative initiale + 1 retry
+                await self.limiter.acquire()
 
-            if response.status_code == 429:
-                retry_after = float(response.headers.get("Retry-After", 60))
-                self.limiter.report_429(retry_after)
-                raise SourceError(f"429 Too Many Requests: {url}")
+                response = await self.client.request(
+                    method,
+                    url,
+                    headers=headers,
+                    params=params,
+                    json=json,
+                )
 
-            response.raise_for_status()
-            self.limiter.report_success()
-            return response
+                if response.status_code == 429:
+                    retry_after = parse_retry_after(
+                        response.headers.get("Retry-After")
+                    )
+                    self.limiter.report_429(retry_after)
+                    if attempt == 0:
+                        # Premier 429: report_429() a arme le backoff du limiter;
+                        # acquire() l'honorera au prochain tour (une seule attente,
+                        # pas de double sleep). On reessaie une seule fois.
+                        continue
+                    # Deuxieme 429: on abandonne.
+                    raise SourceError(f"429 Too Many Requests: {url}")
+
+                response.raise_for_status()
+                self.limiter.report_success()
+                return response
 
         except httpx.HTTPStatusError as e:
             raise SourceError(f"HTTP error {e.response.status_code}: {url}")
