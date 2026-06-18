@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-label="Scholar MCP banner">
+  <defs>
+    <linearGradient id="bgB" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="0.55" stop-color="#1e1b4b"/>
+      <stop offset="1" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="badge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#c7d2fe"/>
+    </linearGradient>
+    <style>
+      .f { font-family: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="320" fill="url(#bgB)"/>
+
+  <!-- faint academic-graph motif -->
+  <g stroke="#818cf8" stroke-opacity="0.13" stroke-width="2" fill="none">
+    <line x1="930" y1="60" x2="1030" y2="120"/>
+    <line x1="1030" y1="120" x2="1150" y2="80"/>
+    <line x1="1030" y1="120" x2="1090" y2="220"/>
+    <line x1="1150" y1="80" x2="1210" y2="170"/>
+    <line x1="1090" y1="220" x2="1200" y2="250"/>
+    <line x1="980" y1="240" x2="1090" y2="220"/>
+  </g>
+  <g fill="#a5b4fc" fill-opacity="0.22">
+    <circle cx="930" cy="60" r="5"/>
+    <circle cx="1030" cy="120" r="7"/>
+    <circle cx="1150" cy="80" r="5"/>
+    <circle cx="1090" cy="220" r="6"/>
+    <circle cx="1210" cy="170" r="5"/>
+    <circle cx="980" cy="240" r="4"/>
+    <circle cx="1200" cy="250" r="5"/>
+  </g>
+
+  <!-- logo badge -->
+  <g transform="translate(84,80)">
+    <rect width="160" height="160" rx="38" fill="url(#badge)"/>
+    <g stroke="#ffffff" stroke-opacity="0.5" stroke-width="2.4">
+      <line x1="55" y1="50" x2="74" y2="71"/>
+      <line x1="74" y1="71" x2="60" y2="95"/>
+      <line x1="74" y1="71" x2="95" y2="54"/>
+    </g>
+    <g fill="#ffffff">
+      <circle cx="55" cy="50" r="6"/>
+      <circle cx="95" cy="54" r="4.5"/>
+      <circle cx="60" cy="95" r="4.5"/>
+      <circle cx="74" cy="71" r="7"/>
+    </g>
+    <g fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round">
+      <circle cx="73" cy="70" r="37"/>
+      <line x1="100" y1="97" x2="120" y2="117"/>
+    </g>
+  </g>
+
+  <!-- title + tagline -->
+  <text x="294" y="142" class="f" font-size="66" font-weight="800" fill="url(#title)">Scholar MCP</text>
+  <text x="298" y="186" class="f" font-size="24" fill="#a5b4fc">Multi-source academic paper search for AI agents</text>
+
+  <!-- feature pills -->
+  <g class="f" font-size="15.5" font-weight="600">
+    <g transform="translate(296,212)">
+      <rect width="110" height="32" rx="16" fill="#6366f1" fill-opacity="0.22" stroke="#818cf8" stroke-opacity="0.5"/>
+      <text x="55" y="21" fill="#e0e7ff" text-anchor="middle">7 sources</text>
+    </g>
+    <g transform="translate(416,212)">
+      <rect width="164" height="32" rx="16" fill="#6366f1" fill-opacity="0.22" stroke="#818cf8" stroke-opacity="0.5"/>
+      <text x="82" y="21" fill="#e0e7ff" text-anchor="middle">BM25 relevance rerank</text>
+    </g>
+    <g transform="translate(590,212)">
+      <rect width="150" height="32" rx="16" fill="#6366f1" fill-opacity="0.22" stroke="#818cf8" stroke-opacity="0.5"/>
+      <text x="75" y="21" fill="#e0e7ff" text-anchor="middle">dedup &amp; merge</text>
+    </g>
+    <g transform="translate(750,212)">
+      <rect width="138" height="32" rx="16" fill="#6366f1" fill-opacity="0.22" stroke="#818cf8" stroke-opacity="0.5"/>
+      <text x="69" y="21" fill="#e0e7ff" text-anchor="middle">citation graph</text>
+    </g>
+  </g>
+
+  <!-- source list -->
+  <text x="298" y="276" class="f" font-size="16" fill="#7c83b8">OpenAlex &#183; Semantic Scholar &#183; Scopus &#183; NASA ADS &#183; CORE &#183; Crossref &#183; Europe PMC</text>
+</svg>
