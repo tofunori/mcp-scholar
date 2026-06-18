@@ -1,5 +1,6 @@
 """Driver CORE (core.ac.uk) pour la recherche d'articles Open Access."""
 
+import asyncio
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
@@ -19,14 +20,22 @@ class CORESource(BaseSource):
 
     BASE_URL = "https://api.core.ac.uk/v3"
 
+    # Le backend Azure Search de CORE renvoie par intermittence un HTTP 500
+    # dont le corps enveloppe un "503 ... not enough resources ... reaching
+    # the limits". C'est transitoire et sans rapport avec l'auth : on reessaie.
+    SEARCH_MAX_ATTEMPTS = 4          # 1 tentative + 3 retries
+    SEARCH_RETRY_BACKOFF = 1.5       # secondes (plancher entre tentatives)
+    # Statuts consideres comme transitoires cote CORE (5xx + 429).
+    _TRANSIENT_STATUS = frozenset({429, 500, 502, 503, 504})
+
     def __init__(self, api_key: str, limiter: Optional[RateLimiter] = None):
         if limiter is None:
             limiter = RateLimiter(
                 "core",
                 RateLimitConfig(
-                    requests_per_second=0.4,  # 25 req/min = 0.42 req/sec
+                    requests_per_second=0.15,  # ~9 req/min (CORE plafonne a 10/min)
                     daily_limit=10_000,
-                    burst_size=5,
+                    burst_size=3,
                 )
             )
         super().__init__(limiter)
@@ -68,26 +77,48 @@ class CORESource(BaseSource):
                 year_filter += f" yearPublished<={year_max}"
             q = f"({query}) AND ({year_filter.strip()})"
 
-        params = {
-            "q": q,
-            "limit": min(limit, 100),  # CORE max 100 par page
-        }
+        # CORE v3 search = POST JSON. Le backend Azure Search renvoie par
+        # intermittence un HTTP 500 enveloppant un "503 not enough resources"
+        # (erreur de capacite, PAS d'auth -- on recoit aussi des 200). On
+        # reessaie quelques fois avec un court backoff pour absorber ces 5xx
+        # transitoires. La boucle est bornee et ne leve jamais : echec final
+        # => [] (comme les autres chemins de cette source).
+        #
+        # Note de design : le retry est scope a CORE ici. La boucle de retry
+        # partagee de base._request n'est PAS modifiee (elle ne reessaie que
+        # sur 429), donc les 6 autres sources ne sont pas affectees.
+        for attempt in range(self.SEARCH_MAX_ATTEMPTS):
+            try:
+                response = await self._request(
+                    "POST",
+                    f"{self.BASE_URL}/search/works",
+                    headers=self._default_headers(),
+                    json={"q": q, "limit": min(limit, 100)},
+                )
+            except SourceError as exc:
+                # Ne reessayer que sur un statut transitoire (5xx / 429).
+                # Une vraie erreur (401 auth, 400 requete) n'est pas reessayee.
+                if exc.status_code not in self._TRANSIENT_STATUS:
+                    return []
+                if attempt + 1 >= self.SEARCH_MAX_ATTEMPTS:
+                    break
+                # Backoff : honorer x-ratelimit-retry-after si present (le
+                # limiter l'aura deja arme via report_429 pour un 429), sinon
+                # un court delai fixe. acquire() au prochain tour respecte le
+                # budget de debit, donc on ne depasse pas le rate limit.
+                await asyncio.sleep(self.SEARCH_RETRY_BACKOFF)
+                continue
 
-        response = await self._request(
-            "GET",
-            f"{self.BASE_URL}/search/works/",
-            headers=self._default_headers(),
-            params=params,
-        )
-        data = response.json()
+            data = response.json()
+            papers = []
+            for result in data.get("results", []):
+                paper = self._parse_work(result)
+                if paper:
+                    papers.append(paper)
+            return papers
 
-        papers = []
-        for result in data.get("results", []):
-            paper = self._parse_work(result)
-            if paper:
-                papers.append(paper)
-
-        return papers
+        # Tous les essais ont echoue sur un 5xx transitoire : best-effort [].
+        return []
 
     async def get_by_id(self, paper_id: str) -> Optional[Paper]:
         """Recupere un article par CORE ID.

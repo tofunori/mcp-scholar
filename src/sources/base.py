@@ -51,8 +51,17 @@ from ..rate_limiting import RateLimiter
 
 
 class SourceError(Exception):
-    """Erreur lors de l'acces a une source."""
-    pass
+    """Erreur lors de l'acces a une source.
+
+    `status_code` est renseigne quand l'erreur provient d'une reponse HTTP
+    (4xx/5xx). Il vaut None pour les erreurs reseau/transport. Cet attribut
+    permet aux sources (ex. CORE) de detecter un 5xx transitoire et de
+    reessayer, sans modifier la boucle de retry partagee de `_request`.
+    """
+
+    def __init__(self, message: str, status_code: Optional[int] = None):
+        super().__init__(message)
+        self.status_code = status_code
 
 
 class BaseSource(ABC):
@@ -148,6 +157,9 @@ class BaseSource(ABC):
                 return response
 
         except httpx.HTTPStatusError as e:
-            raise SourceError(f"HTTP error {e.response.status_code}: {url}")
+            raise SourceError(
+                f"HTTP error {e.response.status_code}: {url}",
+                status_code=e.response.status_code,
+            )
         except httpx.RequestError as e:
             raise SourceError(f"Request error: {e}")
