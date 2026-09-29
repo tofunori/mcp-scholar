@@ -12,9 +12,9 @@ import httpx
 import pytest
 
 from src.rate_limiting import reset_limiters
-from src.server import format_paper_not_found
+from src.server import format_api_status, format_paper_not_found
 from src.services import Orchestrator
-from src.sources import OpenAlexSource
+from src.sources import OpenAlexSource, SemanticScholarSource
 
 FIXTURES = Path(__file__).parent / "fixtures"
 QUERY = "black carbon glacier albedo"
@@ -184,6 +184,75 @@ def test_author_search_reports_source_errors(mock_http):
 
     assert authors == []
     assert len(meta["errors"]) == 2
+
+
+# --- Semantic Scholar citation graph --------------------------------------
+
+
+def test_s2_citations_and_references_do_not_request_tldr(mock_http):
+    mock_http["handler"] = lambda req: httpx.Response(200, json={"data": []})
+
+    async def run():
+        async with SemanticScholarSource() as src:
+            await src.get_citations("10.5194/tc-9-1385-2015", limit=5)
+            await src.get_references("10.5194/tc-9-1385-2015", limit=5)
+
+    asyncio.run(run())
+    for req in mock_http["requests"]:
+        assert "tldr" not in req.url.params["fields"].split(",")
+
+
+def test_s2_citations_bad_request_is_reported(mock_http):
+    def handler(req):
+        if req.url.host == "api.semanticscholar.org":
+            return httpx.Response(
+                400, json={"error": "Unrecognized or unsupported fields: [x]"}
+            )
+        return httpx.Response(200, json={"results": []})
+
+    mock_http["handler"] = handler
+    orch = make_orchestrator()
+
+    _, meta = asyncio.run(orch.get_citations("10.5194/tc-9-1385-2015"))
+
+    assert [e.split(":")[0] for e in meta["errors"]] == ["semantic_scholar"]
+
+
+def test_s2_citations_unknown_paper_is_not_an_error(mock_http):
+    def handler(req):
+        if req.url.host == "api.semanticscholar.org":
+            return httpx.Response(404, json={"error": "Paper not found"})
+        return httpx.Response(200, json={"results": []})
+
+    mock_http["handler"] = handler
+    orch = make_orchestrator()
+
+    _, meta = asyncio.run(orch.get_citations("10.9999/does-not-exist"))
+
+    assert meta["errors"] == []
+
+
+# --- API status -----------------------------------------------------------
+
+
+def test_api_status_reports_rejected_key(mock_http):
+    def handler(req):
+        if req.url.host == "api.elsevier.com":
+            return httpx.Response(401)
+        if req.url.host == "www.ebi.ac.uk":
+            return httpx.Response(200, json={"resultList": {"result": []}})
+        return httpx.Response(404)
+
+    mock_http["handler"] = handler
+    orch = make_orchestrator(scopus_api_key="EXPIRED")
+
+    checks = asyncio.run(orch.check_sources())
+    text = format_api_status(orch, checks)
+
+    assert "401" in checks["scopus"]
+    assert "- **scopus**: Erreur - HTTP error 401" in text
+    assert "- **openalex**: OK" in text
+    assert "- **scix**: Non configure" in text
 
 
 # --- Rate limiting --------------------------------------------------------

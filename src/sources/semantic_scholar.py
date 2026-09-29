@@ -23,6 +23,9 @@ class SemanticScholarSource(BaseSource):
         "citationCount,referenceCount,influentialCitationCount,"
         "authors,fieldsOfStudy,isOpenAccess,openAccessPdf,tldr"
     )
+    # /citations and /references reject `tldr` with a 400
+    # ("Unrecognized or unsupported fields: [tldr]").
+    LINKED_PAPER_FIELDS = PAPER_FIELDS.removesuffix(",tldr")
 
     def __init__(
         self, api_key: Optional[str] = None, limiter: Optional[RateLimiter] = None
@@ -138,7 +141,7 @@ class SemanticScholarSource(BaseSource):
             paper_id = f"DOI:{paper_id}"
 
         params = {
-            "fields": self.PAPER_FIELDS,
+            "fields": self.LINKED_PAPER_FIELDS,
             "limit": min(limit, 1000),
         }
 
@@ -159,9 +162,11 @@ class SemanticScholarSource(BaseSource):
             return papers
 
         except SourceError as exc:
-            if not exc.is_not_found:
-                raise
-            return []
+            # Only an unknown paper (404/410) means "no results"; a 400 here is
+            # a malformed request and must be reported, not swallowed.
+            if exc.status_code in (404, 410):
+                return []
+            raise
 
     async def get_references(self, paper_id: str, limit: int = 100) -> list[Paper]:
         """Recupere les references de cet article."""
@@ -170,7 +175,7 @@ class SemanticScholarSource(BaseSource):
             paper_id = f"DOI:{paper_id}"
 
         params = {
-            "fields": self.PAPER_FIELDS,
+            "fields": self.LINKED_PAPER_FIELDS,
             "limit": min(limit, 1000),
         }
 
@@ -191,9 +196,11 @@ class SemanticScholarSource(BaseSource):
             return papers
 
         except SourceError as exc:
-            if not exc.is_not_found:
-                raise
-            return []
+            # Only an unknown paper (404/410) means "no results"; a 400 here is
+            # a malformed request and must be reported, not swallowed.
+            if exc.status_code in (404, 410):
+                return []
+            raise
 
     async def get_recommendations(
         self,
