@@ -4,7 +4,7 @@ import os
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
-from ..rate_limiting import RateLimiter, RateLimitConfig
+from ..rate_limiting import RateLimiter, RateLimitConfig, get_limiter
 from .base import BaseSource, SourceError
 
 
@@ -39,7 +39,7 @@ class SemanticScholarSource(BaseSource):
                 # Avec cle: quota AUTHENTIFIE dedie (fiabilite), PAS un debit plus
                 # eleve. L'email d'approbation S2 precise: 1 req/s CUMULE sur tous
                 # les endpoints -> regler SOUS le seuil. On vise 0.9 req/s, burst 1.
-                limiter = RateLimiter(
+                limiter = get_limiter(
                     "semantic_scholar",
                     RateLimitConfig(
                         requests_per_second=0.9,
@@ -49,7 +49,7 @@ class SemanticScholarSource(BaseSource):
                 )
             else:
                 # Sans cle: API publique limitee a 1 req/sec.
-                limiter = RateLimiter(
+                limiter = get_limiter(
                     "semantic_scholar",
                     RateLimitConfig(
                         requests_per_second=1.0,
@@ -126,7 +126,9 @@ class SemanticScholarSource(BaseSource):
             )
             data = response.json()
             return self._parse_paper(data)
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     async def get_citations(self, paper_id: str, limit: int = 100) -> list[Paper]:
@@ -156,7 +158,9 @@ class SemanticScholarSource(BaseSource):
                     papers.append(self._parse_paper(citing_paper))
             return papers
 
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     async def get_references(self, paper_id: str, limit: int = 100) -> list[Paper]:
@@ -186,7 +190,9 @@ class SemanticScholarSource(BaseSource):
                     papers.append(self._parse_paper(cited_paper))
             return papers
 
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     async def get_recommendations(
@@ -222,7 +228,9 @@ class SemanticScholarSource(BaseSource):
 
             return [self._parse_paper(p) for p in data.get("recommendedPapers", [])]
 
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     def _parse_paper(self, data: dict) -> Paper:
@@ -311,7 +319,9 @@ class SemanticScholarSource(BaseSource):
             )
             data = response.json()
             return [self._parse_author_full(a) for a in data.get("data", [])]
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     async def get_author(self, author_id: str) -> Optional[Author]:
@@ -333,7 +343,9 @@ class SemanticScholarSource(BaseSource):
             )
             data = response.json()
             return self._parse_author_full(data)
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     def _parse_author_full(self, data: dict) -> Author:

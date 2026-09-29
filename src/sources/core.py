@@ -4,7 +4,7 @@ import asyncio
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
-from ..rate_limiting import RateLimiter, RateLimitConfig
+from ..rate_limiting import RateLimiter, RateLimitConfig, get_limiter
 from .base import BaseSource, SourceError
 
 
@@ -30,7 +30,7 @@ class CORESource(BaseSource):
 
     def __init__(self, api_key: str, limiter: Optional[RateLimiter] = None):
         if limiter is None:
-            limiter = RateLimiter(
+            limiter = get_limiter(
                 "core",
                 RateLimitConfig(
                     requests_per_second=0.15,  # ~9 req/min (CORE plafonne a 10/min)
@@ -142,7 +142,9 @@ class CORESource(BaseSource):
             )
             data = response.json()
             return self._parse_work(data)
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     async def _get_by_doi(self, doi: str) -> Optional[Paper]:
@@ -163,7 +165,9 @@ class CORESource(BaseSource):
             results = data.get("results", [])
             if results:
                 return self._parse_work(results[0])
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             pass
         return None
 

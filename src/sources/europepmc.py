@@ -12,7 +12,7 @@ import re
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
-from ..rate_limiting import RateLimiter, RateLimitConfig
+from ..rate_limiting import RateLimiter, RateLimitConfig, get_limiter
 from .base import BaseSource
 
 
@@ -26,7 +26,7 @@ class EuropePMCSource(BaseSource):
 
     def __init__(self, email: Optional[str] = None, limiter: Optional[RateLimiter] = None):
         if limiter is None:
-            limiter = RateLimiter(
+            limiter = get_limiter(
                 "europe_pmc",
                 RateLimitConfig(
                     requests_per_second=8.0,

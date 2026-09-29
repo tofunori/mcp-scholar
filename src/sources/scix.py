@@ -3,7 +3,7 @@
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
-from ..rate_limiting import RateLimiter, RateLimitConfig
+from ..rate_limiting import RateLimiter, RateLimitConfig, get_limiter
 from .base import BaseSource, SourceError
 
 
@@ -49,7 +49,7 @@ class SciXSource(BaseSource):
 
         # Rate limit: 5000 req/jour = ~0.06 req/sec, mais on peut burst
         if limiter is None:
-            limiter = RateLimiter(
+            limiter = get_limiter(
                 "scix",
                 RateLimitConfig(
                     requests_per_second=5.0,  # Burst OK
@@ -137,7 +137,9 @@ class SciXSource(BaseSource):
             if docs:
                 return self._parse_paper(docs[0])
             return None
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     async def get_citations(self, paper_id: str, limit: int = 100) -> list[Paper]:
@@ -170,7 +172,9 @@ class SciXSource(BaseSource):
                 if p:
                     papers.append(p)
             return papers
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     async def get_references(self, paper_id: str, limit: int = 100) -> list[Paper]:
@@ -203,7 +207,9 @@ class SciXSource(BaseSource):
                 if p:
                     papers.append(p)
             return papers
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     def _parse_paper(self, data: dict) -> Optional[Paper]:

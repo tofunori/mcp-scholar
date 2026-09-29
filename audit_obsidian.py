@@ -6,7 +6,7 @@ import difflib
 from datetime import datetime
 
 # Ajout du path pour les imports
-SCHOLAR_PATH = r"D:\Claude Code\scholar-mcp"
+SCHOLAR_PATH = os.path.dirname(os.path.abspath(__file__))
 if SCHOLAR_PATH not in sys.path:
     sys.path.append(SCHOLAR_PATH)
 

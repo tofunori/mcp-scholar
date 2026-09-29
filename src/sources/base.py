@@ -63,6 +63,14 @@ class SourceError(Exception):
         super().__init__(message)
         self.status_code = status_code
 
+    @property
+    def is_not_found(self) -> bool:
+        """True si la source a repondu que l'identifiant n'existe pas (ou n'est
+        pas un identifiant qu'elle reconnait), par opposition a une panne
+        (reseau, 401/403, 429, 5xx) qui doit etre remontee a l'appelant.
+        """
+        return self.status_code in (400, 404, 410)
+
 
 class BaseSource(ABC):
     """Classe abstraite pour les sources d'articles scientifiques."""

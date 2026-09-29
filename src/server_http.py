@@ -18,6 +18,7 @@ from .services import Orchestrator
 from .server import (
     format_search_results,
     format_paper_details,
+    format_paper_not_found,
     format_citation_results,
     format_similar_results,
     format_api_status,
@@ -77,11 +78,11 @@ async def get_paper(paper_id: str) -> str:
     Accepte DOI, OpenAlex ID, S2 Paper ID, ou Scopus EID.
     """
     orch = get_orchestrator()
-    paper = await orch.get_paper(paper_id)
+    paper, metadata = await orch.get_paper(paper_id)
     if paper:
         return format_paper_details(paper)
     else:
-        return f"Article non trouve: {paper_id}"
+        return format_paper_not_found(paper_id, metadata)
 
 
 @mcp.tool()

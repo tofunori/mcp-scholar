@@ -3,7 +3,7 @@
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
-from ..rate_limiting import RateLimiter, RateLimitConfig
+from ..rate_limiting import RateLimiter, RateLimitConfig, get_limiter
 from .base import BaseSource, SourceError
 
 
@@ -22,7 +22,7 @@ class CrossrefSource(BaseSource):
 
     def __init__(self, mailto: str, limiter: Optional[RateLimiter] = None):
         if limiter is None:
-            limiter = RateLimiter(
+            limiter = get_limiter(
                 "crossref",
                 RateLimitConfig(
                     requests_per_second=10.0,  # Conservateur pour polite pool
@@ -121,7 +121,9 @@ class CrossrefSource(BaseSource):
             )
             data = response.json()
             return self._parse_work(data.get("message", {}))
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     async def get_citations(self, paper_id: str, limit: int = 100) -> list[Paper]:

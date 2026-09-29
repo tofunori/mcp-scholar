@@ -1,0 +1,1065 @@
+{
+ "status": "ok",
+ "message-type": "work-list",
+ "message-version": "1.0.0",
+ "message": {
+  "facets": {},
+  "total-results": 1237609,
+  "items": [
+   {
+    "indexed": {
+     "date-parts": [
+      [
+       2026,
+       9,
+       25
+      ]
+     ],
+     "date-time": "2026-09-25T13:26:32Z",
+     "timestamp": 1790342792967,
+     "version": "4.1.0"
+    },
+    "reference-count": 73,
+    "publisher": "Copernicus GmbH",
+    "issue": "4",
+    "license": [
+     {
+      "start": {
+       "date-parts": [
+        [
+         2015,
+         7,
+         30
+        ]
+       ],
+       "date-time": "2015-07-30T00:00:00Z",
+       "timestamp": 1438214400000
+      },
+      "content-version": "vor",
+      "delay-in-days": 0,
+      "URL": "https://creativecommons.org/licenses/by/3.0/"
+     }
+    ],
+    "content-domain": {
+     "domain": [],
+     "crossmark-restriction": false
+    },
+    "short-container-title": [
+     "The Cryosphere"
+    ],
+    "abstract": "Abstract. Light-absorbing impurities in snow and ice control glacier melt as shortwave radiation represents the main component of the surface energy balance. Here, we investigate the long-term effect of snow impurities, i.e., mineral dust and black carbon (BC), on albedo and glacier mass balance. The analysis was performed over the period 1914–2014 for two sites on Claridenfirn, Swiss Alps, where an outstanding 100-year record of seasonal mass balance measurements is available. Information on atmospheric deposition of mineral dust and BC over the last century was retrieved from two firn/ice cores of high-alpine sites. A combined mass balance and snow/firn layer model was employed to assess the effects of melt and accumulation processes on the impurity concentration at the surface and thus on albedo and glacier mass balance. Compared to pure snow conditions, the presence of Saharan dust and BC lowered the mean annual albedo by 0.04–0.06 depending on the location on the glacier. Consequently, annual melt was increased by 15–19 %, and the mean annual mass balance was reduced by about 280–490 mm w.e. BC clearly dominated absorption which is about 3 times higher than that of mineral dust. The upper site has experienced mainly positive mass balances and impurity layers were continuously buried whereas at the lower site, surface albedo was more strongly influenced by re-exposure of dust and BC-enriched layers due to frequent years with negative mass balances.</jats:p>",
+    "DOI": "10.5194/tc-9-1385-2015",
+    "type": "journal-article",
+    "created": {
+     "date-parts": [
+      [
+       2015,
+       7,
+       30
+      ]
+     ],
+     "date-time": "2015-07-30T08:25:34Z",
+     "timestamp": 1438244734000
+    },
+    "page": "1385-1400",
+    "source": "Crossref",
+    "is-referenced-by-count": 88,
+    "title": [
+     "The impact of Saharan dust and black carbon on albedo and long-term mass balance of an Alpine glacier"
+    ],
+    "prefix": "10.5194",
+    "volume": "9",
+    "author": [
+     {
+      "given": "J.",
+      "family": "Gabbi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-2377-6923",
+      "authenticated-orcid": false,
+      "given": "M.",
+      "family": "Huss",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0001-7197-7706",
+      "authenticated-orcid": false,
+      "given": "A.",
+      "family": "Bauder",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "F.",
+      "family": "Cao",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-0856-5183",
+      "authenticated-orcid": false,
+      "given": "M.",
+      "family": "Schwikowski",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "member": "3145",
+    "published-online": {
+     "date-parts": [
+      [
+       2015,
+       7,
+       30
+      ]
+     ]
+    },
+    "container-title": [
+     "The Cryosphere"
+    ],
+    "language": "en",
+    "deposited": {
+     "date-parts": [
+      [
+       2025,
+       2,
+       8
+      ]
+     ],
+     "date-time": "2025-02-08T12:04:15Z",
+     "timestamp": 1739016255000
+    },
+    "score": 27.675821,
+    "resource": {
+     "primary": {
+      "URL": "https://tc.copernicus.org/articles/9/1385/2015/"
+     }
+    },
+    "issued": {
+     "date-parts": [
+      [
+       2015,
+       7,
+       30
+      ]
+     ]
+    },
+    "references-count": 73,
+    "journal-issue": {
+     "issue": "4",
+     "published-online": {
+      "date-parts": [
+       [
+        2015
+       ]
+      ]
+     }
+    },
+    "URL": "https://doi.org/10.5194/tc-9-1385-2015",
+    "relation": {
+     "has-preprint": [
+      {
+       "id-type": "doi",
+       "id": "10.5194/tcd-9-1133-2015",
+       "asserted-by": "subject"
+      },
+      {
+       "id-type": "doi",
+       "id": "10.5194/tcd-9-1133-2015",
+       "asserted-by": "object"
+      }
+     ]
+    },
+    "ISSN": [
+     "1994-0424"
+    ],
+    "issn-type": [
+     {
+      "value": "1994-0424",
+      "type": "electronic"
+     }
+    ],
+    "published": {
+     "date-parts": [
+      [
+       2015,
+       7,
+       30
+      ]
+     ]
+    }
+   },
+   {
+    "indexed": {
+     "date-parts": [
+      [
+       2026,
+       1,
+       8
+      ]
+     ],
+     "date-time": "2026-01-08T11:50:37Z",
+     "timestamp": 1767873037109,
+     "version": "3.49.0"
+    },
+    "reference-count": 56,
+    "publisher": "Elsevier BV",
+    "license": [
+     {
+      "start": {
+       "date-parts": [
+        [
+         2021,
+         5,
+         1
+        ]
+       ],
+       "date-time": "2021-05-01T00:00:00Z",
+       "timestamp": 1619827200000
+      },
+      "content-version": "tdm",
+      "delay-in-days": 0,
+      "URL": "https://www.elsevier.com/tdm/userlicense/1.0/"
+     },
+     {
+      "start": {
+       "date-parts": [
+        [
+         2021,
+         5,
+         1
+        ]
+       ],
+       "date-time": "2021-05-01T00:00:00Z",
+       "timestamp": 1619827200000
+      },
+      "content-version": "tdm",
+      "delay-in-days": 0,
+      "URL": "https://www.elsevier.com/legal/tdmrep-license"
+     },
+     {
+      "start": {
+       "date-parts": [
+        [
+         2021,
+         5,
+         1
+        ]
+       ],
+       "date-time": "2021-05-01T00:00:00Z",
+       "timestamp": 1619827200000
+      },
+      "content-version": "stm-asf",
+      "delay-in-days": 0,
+      "URL": "https://doi.org/10.15223/policy-017"
+     },
+     {
+      "start": {
+       "date-parts": [
+        [
+         2021,
+         5,
+         1
+        ]
+       ],
+       "date-time": "2021-05-01T00:00:00Z",
+       "timestamp": 1619827200000
+      },
+      "content-version": "stm-asf",
+      "delay-in-days": 0,
+      "URL": "https://doi.org/10.15223/policy-037"
+     },
+     {
+      "start": {
+       "date-parts": [
+        [
+         2021,
+         5,
+         1
+        ]
+       ],
+       "date-time": "2021-05-01T00:00:00Z",
+       "timestamp": 1619827200000
+      },
+      "content-version": "stm-asf",
+      "delay-in-days": 0,
+      "URL": "https://doi.org/10.15223/policy-012"
+     },
+     {
+      "start": {
+       "date-parts": [
+        [
+         2021,
+         5,
+         1
+        ]
+       ],
+       "date-time": "2021-05-01T00:00:00Z",
+       "timestamp": 1619827200000
+      },
+      "content-version": "stm-asf",
+      "delay-in-days": 0,
+      "URL": "https://doi.org/10.15223/policy-029"
+     },
+     {
+      "start": {
+       "date-parts": [
+        [
+         2021,
+         5,
+         1
+        ]
+       ],
+       "date-time": "2021-05-01T00:00:00Z",
+       "timestamp": 1619827200000
+      },
+      "content-version": "stm-asf",
+      "delay-in-days": 0,
+      "URL": "https://doi.org/10.15223/policy-004"
+     }
+    ],
+    "funder": [
+     {
+      "DOI": "10.13039/501100001851",
+      "name": "Ministry of Earth Sciences",
+      "doi-asserted-by": "publisher",
+      "id": [
+       {
+        "id": "10.13039/501100001851",
+        "id-type": "DOI",
+        "asserted-by": "publisher"
+       }
+      ]
+     }
+    ],
+    "content-domain": {
+     "domain": [
+      "elsevier.com",
+      "sciencedirect.com"
+     ],
+     "crossmark-restriction": true
+    },
+    "short-container-title": [
+     "Journal of Atmospheric and Solar-Terrestrial Physics"
+    ],
+    "published-print": {
+     "date-parts": [
+      [
+       2021,
+       5
+      ]
+     ]
+    },
+    "DOI": "10.1016/j.jastp.2021.105580",
+    "type": "journal-article",
+    "created": {
+     "date-parts": [
+      [
+       2021,
+       3,
+       2
+      ]
+     ],
+     "date-time": "2021-03-02T22:33:54Z",
+     "timestamp": 1614724434000
+    },
+    "page": "105580",
+    "update-policy": "https://doi.org/10.1016/elsevier_cm_policy",
+    "source": "Crossref",
+    "is-referenced-by-count": 5,
+    "special_numbering": "C",
+    "title": [
+     "Observations of black carbon and albedo over a Central Himalayan Glacier (Satopanth): Preliminary results"
+    ],
+    "prefix": "10.1016",
+    "volume": "216",
+    "author": [
+     {
+      "given": "K.",
+      "family": "Sandeep",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.S.",
+      "family": "Panicker",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Alok Sagar",
+      "family": "Gautam",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "P.D.",
+      "family": "Safai",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Beig",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.C.",
+      "family": "Nainwal",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.S.",
+      "family": "Bisht",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "S.",
+      "family": "Das",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "member": "78",
+    "container-title": [
+     "Journal of Atmospheric and Solar-Terrestrial Physics"
+    ],
+    "language": "en",
+    "deposited": {
+     "date-parts": [
+      [
+       2025,
+       10,
+       23
+      ]
+     ],
+     "date-time": "2025-10-23T22:45:13Z",
+     "timestamp": 1761259513000
+    },
+    "score": 24.820318,
+    "resource": {
+     "primary": {
+      "URL": "https://linkinghub.elsevier.com/retrieve/pii/S1364682621000444"
+     }
+    },
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       5
+      ]
+     ]
+    },
+    "references-count": 56,
+    "alternative-id": [
+     "S1364682621000444"
+    ],
+    "URL": "https://doi.org/10.1016/j.jastp.2021.105580",
+    "ISSN": [
+     "1364-6826"
+    ],
+    "issn-type": [
+     {
+      "value": "1364-6826",
+      "type": "print"
+     }
+    ],
+    "published": {
+     "date-parts": [
+      [
+       2021,
+       5
+      ]
+     ]
+    },
+    "article-number": "105580"
+   },
+   {
+    "indexed": {
+     "date-parts": [
+      [
+       2022,
+       4,
+       5
+      ]
+     ],
+     "date-time": "2022-04-05T16:32:32Z",
+     "timestamp": 1649176352831
+    },
+    "reference-count": 0,
+    "publisher": "Publishing House SB RAS",
+    "issue": "1",
+    "content-domain": {
+     "domain": [],
+     "crossmark-restriction": false
+    },
+    "short-container-title": [
+     "AOO"
+    ],
+    "published-print": {
+     "date-parts": [
+      [
+       2020
+      ]
+     ]
+    },
+    "DOI": "10.15372/aoo20200109",
+    "type": "journal-article",
+    "created": {
+     "date-parts": [
+      [
+       2020,
+       1,
+       27
+      ]
+     ],
+     "date-time": "2020-01-27T09:59:45Z",
+     "timestamp": 1580119185000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+     "Atmospheric black carbon and surface albedo in the Russian Arctic in spring"
+    ],
+    "prefix": "10.15372",
+    "member": "6171",
+    "published-online": {
+     "date-parts": [
+      [
+       2020
+      ]
+     ]
+    },
+    "container-title": [
+     "Оптика атмосферы и океана"
+    ],
+    "deposited": {
+     "date-parts": [
+      [
+       2020,
+       1,
+       27
+      ]
+     ],
+     "date-time": "2020-01-27T09:59:50Z",
+     "timestamp": 1580119190000
+    },
+    "score": 24.378448,
+    "resource": {
+     "primary": {
+      "URL": "http://sibran.ru/journals/issue.php?ID=178167&ARTICLE_ID=178176"
+     }
+    },
+    "issued": {
+     "date-parts": [
+      [
+       2020
+      ]
+     ]
+    },
+    "references-count": 0,
+    "journal-issue": {
+     "issue": "1",
+     "published-online": {
+      "date-parts": [
+       [
+        2020
+       ]
+      ]
+     },
+     "published-print": {
+      "date-parts": [
+       [
+        2020
+       ]
+      ]
+     }
+    },
+    "URL": "https://doi.org/10.15372/aoo20200109",
+    "ISSN": [
+     "0869-5695"
+    ],
+    "issn-type": [
+     {
+      "value": "0869-5695",
+      "type": "print"
+     }
+    ],
+    "published": {
+     "date-parts": [
+      [
+       2020
+      ]
+     ]
+    }
+   },
+   {
+    "indexed": {
+     "date-parts": [
+      [
+       2025,
+       10,
+       11
+      ]
+     ],
+     "date-time": "2025-10-11T01:29:42Z",
+     "timestamp": 1760146182838,
+     "version": "build-2065373602"
+    },
+    "reference-count": 28,
+    "publisher": "MDPI AG",
+    "issue": "10",
+    "license": [
+     {
+      "start": {
+       "date-parts": [
+        [
+         2024,
+         10,
+         16
+        ]
+       ],
+       "date-time": "2024-10-16T00:00:00Z",
+       "timestamp": 1729036800000
+      },
+      "content-version": "vor",
+      "delay-in-days": 0,
+      "URL": "https://creativecommons.org/licenses/by/4.0/"
+     }
+    ],
+    "funder": [
+     {
+      "name": "State Key Laboratory of Atmospheric Boundary Layer Physics and Atmospheric Chemistry",
+      "award": [
+       "LAPC-KF-2023-09",
+       "2024B05"
+      ],
+      "award-info": [
+       {
+        "award-number": [
+         "LAPC-KF-2023-09",
+         "2024B05"
+        ]
+       }
+      ]
+     },
+     {
+      "name": "China Meteorological Administration Atmospheric Chemistry Key Laboratory",
+      "award": [
+       "LAPC-KF-2023-09",
+       "2024B05"
+      ],
+      "award-info": [
+       {
+        "award-number": [
+         "LAPC-KF-2023-09",
+         "2024B05"
+        ]
+       }
+      ]
+     }
+    ],
+    "content-domain": {
+     "domain": [],
+     "crossmark-restriction": false
+    },
+    "short-container-title": [
+     "Atmosphere"
+    ],
+    "abstract": "Black carbon (BC) aerosols have attracted wide attention over the world due to their significant climate effects on local and global scales. BC extinction aerosol optical thickness (AOT), scattering AOT, and single scattering albedo (SSA) over China are systematically studied based on the MERRA-2 satellite reanalysis data from 1983 to 2022 in terms of the spatial, yearly, seasonal, and monthly variations. The extinction and scattering AOTs of BC show similar spatial distribution, with high values in eastern and southern China, generally as opposed to BC SSA. A decrease in BC extinction and scattering AOTs has been documented over the last decade. The mean BC extinction AOT, scattering AOT, and SSA over China are 0.0054, 0.0014, and 0.26, respectively. The BC SSA showed small variations during 1983–2022, although a high BC extinction AOT and scattering AOT have been seen in the last two decades. During different decades, the seasonal patterns of BC extinction and scattering AOTs may differ, whereas the BC SSA shows seasonal consistency. Significant monthly variations in the BC SSA are seen over four decades, which are in agreement with their seasonal patterns. The mean BC extinction AOTs are 0.037, 0.033, 0.023, and 0.0054, whereas the average BC scattering AOTs are 0.0088, 0.0082, 0.0060, and 0.0014 in the Pearl River Delta (PRD), Yangtze River Delta (YRD), Beijing–Tianjin–Hebei (BTH) region, and Tarim Basin (TB), respectively. It is interesting to see that BC SSA values in the TB region are generally higher than those over the PRD, YRD and BTH areas, whereas the reverse is true for BC extinction and scattering AOTs. This study provides references for further research on black carbon aerosols and air pollution in China.</jats:p>",
+    "DOI": "10.3390/atmos15101238",
+    "type": "journal-article",
+    "created": {
+     "date-parts": [
+      [
+       2024,
+       10,
+       16
+      ]
+     ],
+     "date-time": "2024-10-16T10:11:04Z",
+     "timestamp": 1729073464000
+    },
+    "page": "1238",
+    "update-policy": "https://doi.org/10.3390/mdpi_crossmark_policy",
+    "source": "Crossref",
+    "is-referenced-by-count": 1,
+    "title": [
+     "The Single-Scattering Albedo of Black Carbon Aerosols in China"
+    ],
+    "prefix": "10.3390",
+    "volume": "15",
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0003-3270-2683",
+      "authenticated-orcid": false,
+      "given": "Xiaolin",
+      "family": "Zhang",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "China Meteorological Administration Aerosol-Cloud and Precipitation Key Laboratory, School of Atmospheric Physics, Nanjing University of Information Science and Technology, Nanjing 210044, China"
+       },
+       {
+        "name": "Key Laboratory of Meteorological Disaster, Ministry of Education (KLME), Nanjing University of Information Science and Technology, Nanjing 210044, China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yuanyuan",
+      "family": "Wu",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "China Meteorological Administration Aerosol-Cloud and Precipitation Key Laboratory, School of Atmospheric Physics, Nanjing University of Information Science and Technology, Nanjing 210044, China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "member": "1968",
+    "published-online": {
+     "date-parts": [
+      [
+       2024,
+       10,
+       16
+      ]
+     ]
+    },
+    "container-title": [
+     "Atmosphere"
+    ],
+    "language": "en",
+    "deposited": {
+     "date-parts": [
+      [
+       2025,
+       10,
+       10
+      ]
+     ],
+     "date-time": "2025-10-10T16:14:32Z",
+     "timestamp": 1760112872000
+    },
+    "score": 24.303783,
+    "resource": {
+     "primary": {
+      "URL": "https://www.mdpi.com/2073-4433/15/10/1238"
+     }
+    },
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       10,
+       16
+      ]
+     ]
+    },
+    "references-count": 28,
+    "journal-issue": {
+     "issue": "10",
+     "published-online": {
+      "date-parts": [
+       [
+        2024,
+        10
+       ]
+      ]
+     }
+    },
+    "alternative-id": [
+     "atmos15101238"
+    ],
+    "URL": "https://doi.org/10.3390/atmos15101238",
+    "ISSN": [
+     "2073-4433"
+    ],
+    "issn-type": [
+     {
+      "type": "electronic",
+      "value": "2073-4433"
+     }
+    ],
+    "published": {
+     "date-parts": [
+      [
+       2024,
+       10,
+       16
+      ]
+     ]
+    }
+   },
+   {
+    "indexed": {
+     "date-parts": [
+      [
+       2022,
+       4,
+       1
+      ]
+     ],
+     "date-time": "2022-04-01T20:24:44Z",
+     "timestamp": 1648844684694
+    },
+    "reference-count": 10,
+    "publisher": "Trans Tech Publications, Ltd.",
+    "license": [
+     {
+      "start": {
+       "date-parts": [
+        [
+         2011,
+         7,
+         4
+        ]
+       ],
+       "date-time": "2011-07-04T00:00:00Z",
+       "timestamp": 1309737600000
+      },
+      "content-version": "vor",
+      "delay-in-days": 3,
+      "URL": "https://www.scientific.net/PolicyAndEthics/PublishingPolicies"
+     },
+     {
+      "start": {
+       "date-parts": [
+        [
+         2011,
+         7,
+         4
+        ]
+       ],
+       "date-time": "2011-07-04T00:00:00Z",
+       "timestamp": 1309737600000
+      },
+      "content-version": "tdm",
+      "delay-in-days": 3,
+      "URL": "https://www.scientific.net/license/TDM_Licenser.pdf"
+     }
+    ],
+    "content-domain": {
+     "domain": [],
+     "crossmark-restriction": false
+    },
+    "short-container-title": [
+     "AMR"
+    ],
+    "abstract": "We carried out numerical experiments of snow accumulation and depletion as well as snow albedo for a SNOw pack TELemetry (SNOTEL) site, using a one-dimensinal energy and mass balance snow model (SNTHERM) and a two-stream, multi-layer Snow, Ice, and Aerosol Radiation model (SNICAR). We developed SNTHERM_SNICAR model by replacing the snow albedo algorithm in SNTHERM with SNICAR algorithm, to improve understanding of snow accumulation and snowpack ablation processes and response from black carbon (BC) in snow. Model was tested against observed snow water equivalent (SWE) during the water year 2000 and 2002. Results show that both models do a very good job at predicting SWE, although underestimates and earlier melt-out happen. Snow albedo got from SNTHERM_SNICAR model is lower than that got from SNTHERM. Decrease in albedo, duo to BC mixed in snow, leads to faster snowmelt process and shorter duration of snow cover.</jats:p>",
+    "DOI": "10.4028/www.scientific.net/amr.281.147",
+    "type": "journal-article",
+    "created": {
+     "date-parts": [
+      [
+       2011,
+       7,
+       4
+      ]
+     ],
+     "date-time": "2011-07-04T15:20:06Z",
+     "timestamp": 1309792806000
+    },
+    "page": "147-150",
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+     "Modification of SNTHERM Albedo Algorithm and Response from Black Carbon in Snow"
+    ],
+    "prefix": "10.4028",
+    "volume": "281",
+    "author": [
+     {
+      "given": "Su Zhen",
+      "family": "Dang",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Beijing Normal University"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Chang Ming",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Beijing Normal University"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "member": "2457",
+    "published-online": {
+     "date-parts": [
+      [
+       2011,
+       7
+      ]
+     ]
+    },
+    "container-title": [
+     "Advanced Materials Research"
+    ],
+    "deposited": {
+     "date-parts": [
+      [
+       2021,
+       1,
+       12
+      ]
+     ],
+     "date-time": "2021-01-12T23:36:59Z",
+     "timestamp": 1610494619000
+    },
+    "score": 22.422703,
+    "resource": {
+     "primary": {
+      "URL": "https://www.scientific.net/AMR.281.147"
+     }
+    },
+    "issued": {
+     "date-parts": [
+      [
+       2011,
+       7
+      ]
+     ]
+    },
+    "references-count": 10,
+    "URL": "https://doi.org/10.4028/www.scientific.net/amr.281.147",
+    "ISSN": [
+     "1662-8985"
+    ],
+    "issn-type": [
+     {
+      "value": "1662-8985",
+      "type": "electronic"
+     }
+    ],
+    "published": {
+     "date-parts": [
+      [
+       2011,
+       7
+      ]
+     ]
+    }
+   }
+  ],
+  "items-per-page": 5,
+  "query": {
+   "start-index": 0,
+   "search-terms": null
+  }
+ }
+}
