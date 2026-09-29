@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-scholar-mcp = "src.server:main"
+scholar-mcp = "src.server:run"
 
 [tool.uv]
 dev-dependencies = [
