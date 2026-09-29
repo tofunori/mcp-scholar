@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
-from ..rate_limiting import RateLimiter, RateLimitConfig
+from ..rate_limiting import RateLimiter, RateLimitConfig, get_limiter
 from .base import BaseSource, SourceError
 
 logger = logging.getLogger(__name__)
@@ -15,6 +15,9 @@ class OpenAlexSource(BaseSource):
 
     BASE_URL = "https://api.openalex.org"
 
+    # Plafond documente de per_page (100 depuis 2026)
+    MAX_PER_PAGE = 100
+
     # Champs a recuperer (optimisation)
     WORK_FIELDS = (
         "id,doi,title,publication_year,publication_date,"
@@ -22,9 +25,14 @@ class OpenAlexSource(BaseSource):
         "primary_location,open_access,concepts,type,referenced_works"
     )
 
-    def __init__(self, mailto: str, limiter: Optional[RateLimiter] = None):
+    def __init__(
+        self,
+        mailto: Optional[str] = None,
+        limiter: Optional[RateLimiter] = None,
+        api_key: Optional[str] = None,
+    ):
         if limiter is None:
-            limiter = RateLimiter(
+            limiter = get_limiter(
                 "openalex",
                 RateLimitConfig(
                     requests_per_second=10.0,  # Polite pool
@@ -34,13 +42,19 @@ class OpenAlexSource(BaseSource):
             )
         super().__init__(limiter)
         self.mailto = mailto
+        # Depuis fevrier 2026, OpenAlex ignore mailto et attend une cle API
+        # (gratuite). Sans cle, les requetes puisent dans un budget anonyme
+        # partage qui renvoie vite des 429.
+        self.api_key = api_key
 
     def _default_params(self) -> dict:
         """Parametres par defaut pour toutes les requetes."""
-        return {
-            "mailto": self.mailto,
-            "per-page": 200,  # Max pour performance
-        }
+        params = {}
+        if self.api_key:
+            params["api_key"] = self.api_key
+        if self.mailto:
+            params["mailto"] = self.mailto
+        return params
 
     async def search(
         self,
@@ -53,7 +67,7 @@ class OpenAlexSource(BaseSource):
         """Recherche d'articles par mots-cles."""
         params = self._default_params()
         params["search"] = query
-        params["per-page"] = min(limit, 200)
+        params["per-page"] = min(limit, self.MAX_PER_PAGE)
         params["select"] = self.WORK_FIELDS
 
         # Construire les filtres
@@ -109,7 +123,9 @@ class OpenAlexSource(BaseSource):
             response = await self._request("GET", url, params=params)
             data = response.json()
             return self._parse_work(data)
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     async def get_citations(self, paper_id: str, limit: int = 100) -> list[Paper]:
@@ -121,7 +137,7 @@ class OpenAlexSource(BaseSource):
 
         params = self._default_params()
         params["filter"] = f"cites:{paper.openalex_id}"
-        params["per-page"] = min(limit, 200)
+        params["per-page"] = min(limit, self.MAX_PER_PAGE)
         params["select"] = self.WORK_FIELDS
 
         response = await self._request("GET", f"{self.BASE_URL}/works", params=params)
@@ -286,7 +302,9 @@ class OpenAlexSource(BaseSource):
             response = await self._request("GET", url, params=params)
             data = response.json()
             return self._parse_author(data)
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     def _parse_author(self, data: dict) -> Author:

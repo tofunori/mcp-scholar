@@ -233,7 +233,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             )]
 
         elif name == "get_paper":
-            paper = await orch.get_paper(arguments["paper_id"])
+            paper, metadata = await orch.get_paper(arguments["paper_id"])
             if paper:
                 return [TextContent(
                     type="text",
@@ -242,7 +242,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             else:
                 return [TextContent(
                     type="text",
-                    text=f"Article non trouve: {arguments['paper_id']}",
+                    text=format_paper_not_found(arguments["paper_id"], metadata),
                 )]
 
         elif name == "get_citations":
@@ -317,8 +317,7 @@ def format_search_results(papers: list, metadata: dict) -> str:
     if metadata.get("duplicates_removed"):
         lines.append(f"Doublons supprimes: {metadata['duplicates_removed']}")
 
-    if metadata.get("errors"):
-        lines.append(f"Erreurs: {', '.join(metadata['errors'])}")
+    lines.extend(format_errors(metadata))
 
     lines.append("")
 
@@ -351,6 +350,26 @@ def format_search_results(papers: list, metadata: dict) -> str:
         lines.append("")
 
     return "\n".join(lines)
+
+
+def format_errors(metadata: dict) -> list[str]:
+    """Lignes signalant les sources en erreur (vide si aucune)."""
+    if not metadata.get("errors"):
+        return []
+    return [f"Erreurs: {', '.join(metadata['errors'])}"]
+
+
+def format_paper_not_found(paper_id: str, metadata: dict) -> str:
+    """Distingue un article absent d'une verification impossible."""
+    errors = metadata.get("errors", [])
+    queried = metadata.get("sources_queried", [])
+    if errors and len(errors) >= len(queried):
+        head = f"Verification impossible pour {paper_id}: toutes les sources ont echoue."
+    elif errors:
+        head = f"Article non trouve: {paper_id} (certaines sources ont echoue)."
+    else:
+        head = f"Article non trouve: {paper_id}"
+    return "\n".join([head, *format_errors(metadata)])
 
 
 def format_paper_details(paper) -> str:
@@ -438,6 +457,7 @@ def format_citation_results(papers: list, metadata: dict, direction: str) -> str
     if metadata.get("duplicates_removed"):
         lines.append(f"Doublons supprimes: {metadata['duplicates_removed']}")
 
+    lines.extend(format_errors(metadata))
     lines.append("")
 
     for i, paper in enumerate(papers[:20], 1):  # Limiter l'affichage
@@ -493,7 +513,8 @@ def format_api_status(orch: Orchestrator) -> str:
 
     lines.append("")
     lines.append("### Configuration")
-    lines.append(f"- OpenAlex mailto: {bool(orch.openalex_mailto)}")
+    lines.append(f"- OpenAlex API key: {bool(orch.openalex_api_key)}")
+    lines.append(f"- Email de contact (mailto): {bool(orch.openalex_mailto)}")
     lines.append(f"- S2 API key (x-api-key actif): {bool(orch.s2_api_key)}")
     lines.append(f"- Scopus API key: {bool(orch.scopus_api_key)}")
     lines.append(f"- SciX API key: {bool(orch.scix_api_key)}")
@@ -523,6 +544,7 @@ def format_author_results(authors: list, metadata: dict) -> str:
     if metadata.get("duplicates_removed"):
         lines.append(f"Doublons supprimes: {metadata['duplicates_removed']}")
 
+    lines.extend(format_errors(metadata))
     lines.append("")
 
     for i, author in enumerate(authors, 1):

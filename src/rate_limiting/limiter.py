@@ -102,3 +102,27 @@ class RateLimiter:
 class RateLimitExceeded(Exception):
     """Exception levee quand la limite de requetes est atteinte."""
     pass
+
+
+# Un seul limiteur par source pour tout le processus. Les sources sont
+# recreees a chaque appel d'outil; sans ce registre, chaque instance aurait
+# son propre token bucket et les quotas (ex. S2 a 1 req/s) ne seraient pas
+# respectes entre deux appels ou entre appels concurrents.
+_registry: dict[str, RateLimiter] = {}
+
+
+def get_limiter(name: str, config: RateLimitConfig) -> RateLimiter:
+    """Retourne le limiteur partage pour `name`, le cree au premier appel.
+
+    La config du premier appel est retenue; les suivants la reutilisent.
+    """
+    limiter = _registry.get(name)
+    if limiter is None:
+        limiter = RateLimiter(name, config)
+        _registry[name] = limiter
+    return limiter
+
+
+def reset_limiters() -> None:
+    """Vide le registre (tests)."""
+    _registry.clear()

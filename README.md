@@ -29,7 +29,7 @@ Asking one academic API a question gives you one provider's view, in one provide
 
 | Source | Documents | Coverage | API key |
 |--------|-----------|----------|---------|
-| [OpenAlex](https://openalex.org/) | 250M+ | All disciplines | Email only (polite pool) |
+| [OpenAlex](https://openalex.org/) | 250M+ | All disciplines | Recommended (free) |
 | [Semantic Scholar](https://www.semanticscholar.org/) | 200M+ | CS, biomedical, general | Optional (recommended) |
 | [Scopus](https://www.scopus.com/) | 90M+ | Peer-reviewed journals | Required (Elsevier) |
 | [NASA ADS / SciX](https://scixplorer.org/) | 30M+ | Astrophysics, Earth & planetary science | Required |
@@ -78,7 +78,12 @@ uv run python -m nltk.downloader stopwords punkt
 Create a `.env` file (see `.env.example`):
 
 ```bash
-# Required — OpenAlex polite pool (your email)
+# Recommended — OpenAlex API key (free: https://openalex.org/settings/api)
+# Since February 2026 OpenAlex ignores `mailto`; keyless requests share a small
+# anonymous budget and quickly get 429s.
+OPENALEX_API_KEY=
+
+# Contact email — Crossref polite pool and Europe PMC (Crossref is skipped without it)
 OPENALEX_MAILTO=your.email@example.com
 
 # Recommended — Semantic Scholar key (https://www.semanticscholar.org/product/api)
@@ -105,6 +110,7 @@ Add the server to `~/.claude.json` (stdio):
       "command": "uv",
       "args": ["--directory", "/path/to/mcp-scholar", "run", "python", "-m", "src.server"],
       "env": {
+        "OPENALEX_API_KEY": "your_openalex_key",
         "OPENALEX_MAILTO": "your.email@example.com",
         "S2_API_KEY": "your_s2_key",
         "SCOPUS_API_KEY": "your_scopus_key",
@@ -152,13 +158,29 @@ get_citations("10.1029/2022EF002685", limit=50)
 
 | Source | Default rate | Notes |
 |--------|--------------|-------|
-| OpenAlex | 10 req/s | Polite pool (email) |
+| OpenAlex | 10 req/s | Daily budget per API key; `per_page` capped at 100 |
 | Semantic Scholar | 1 req/s | Dedicated quota with a key; shared pool otherwise |
 | Scopus | 2 req/s | ~20k/week (subscription-dependent) |
 | NASA ADS / SciX | 5 req/s | 5,000/day |
 | CORE | ~10 req/min | Free tier; transient 5xx auto-retried |
 | Crossref | 10 req/s | Polite pool |
 | Europe PMC | 8 req/s | Keyless |
+
+Limits are shared per source across the whole process, so back-to-back or
+concurrent tool calls respect the same quota.
+
+When a source fails (network, auth, 429, 5xx), every tool lists it under
+`Erreurs:` instead of reporting an empty result, and `get_paper` says
+"Verification impossible" rather than "Article non trouve".
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+The tests run offline against recorded OpenAlex and Crossref responses
+(`tests/fixtures/`), with every HTTP call routed through `httpx.MockTransport`.
 
 ## License
 

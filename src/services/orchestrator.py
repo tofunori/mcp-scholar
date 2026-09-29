@@ -23,12 +23,14 @@ class Orchestrator:
         scopus_api_key: Optional[str] = None,
         scix_api_key: Optional[str] = None,
         core_api_key: Optional[str] = None,
+        openalex_api_key: Optional[str] = None,
     ):
         self.openalex_mailto = openalex_mailto or config.openalex_mailto
         self.s2_api_key = s2_api_key or config.s2_api_key
         self.scopus_api_key = scopus_api_key or config.scopus_api_key
         self.scix_api_key = scix_api_key or config.scix_api_key
         self.core_api_key = core_api_key or config.core_api_key
+        self.openalex_api_key = openalex_api_key or config.openalex_api_key
 
         self.deduplicator = Deduplicator(
             title_threshold=config.title_similarity_threshold
@@ -36,7 +38,8 @@ class Orchestrator:
 
         # Sources disponibles
         self._sources_config = {
-            "openalex": self.openalex_mailto,
+            # Cle API recommandee; sans cle, budget anonyme partage (429 rapides)
+            "openalex": True,
             "semantic_scholar": True,  # Toujours disponible
             "scopus": bool(self.scopus_api_key),
             "scix": bool(self.scix_api_key),
@@ -89,7 +92,7 @@ class Orchestrator:
         source_names = []
 
         for source in sources:
-            if source == "openalex" and self.openalex_mailto:
+            if source == "openalex":
                 tasks.append(self._search_openalex(query, limit, year_min, year_max))
                 source_names.append("openalex")
 
@@ -155,13 +158,17 @@ class Orchestrator:
 
         return papers, metadata
 
-    async def get_paper(self, paper_id: str) -> Optional[Paper]:
-        """Recupere un article par ID (DOI, S2 ID, etc.)."""
+    async def get_paper(self, paper_id: str) -> tuple[Optional[Paper], dict]:
+        """Recupere un article par ID (DOI, S2 ID, etc.).
+
+        Returns:
+            Tuple (article ou None, metadata). metadata["errors"] liste les
+            sources en panne, pour distinguer "introuvable" de "non verifie".
+        """
         # Essayer les sources dans l'ordre
         tasks = []
 
-        if self.openalex_mailto:
-            tasks.append(("openalex", self._get_openalex(paper_id)))
+        tasks.append(("openalex", self._get_openalex(paper_id)))
 
         tasks.append(("semantic_scholar", self._get_s2(paper_id)))
 
@@ -187,20 +194,22 @@ class Orchestrator:
 
         # Collecter les resultats valides
         papers = []
+        metadata = {"sources_queried": [t[0] for t in tasks], "errors": []}
         for (source_name, _), result in zip(tasks, results):
             if isinstance(result, Paper):
                 papers.append(result)
             elif isinstance(result, Exception):
-                logger.debug(f"Erreur {source_name} pour {paper_id}: {result}")
+                logger.warning(f"Erreur {source_name} pour {paper_id}: {result}")
+                metadata["errors"].append(f"{source_name}: {result}")
 
         if not papers:
-            return None
+            return None, metadata
 
         # Fusionner si plusieurs sources ont trouve l'article
         if len(papers) > 1:
             papers, _ = self.deduplicator.deduplicate(papers)
 
-        return papers[0] if papers else None
+        return (papers[0] if papers else None), metadata
 
     async def get_citations(
         self,
@@ -216,7 +225,7 @@ class Orchestrator:
         source_names = []
 
         for source in sources:
-            if source == "openalex" and self.openalex_mailto:
+            if source == "openalex":
                 tasks.append(self._get_citations_openalex(paper_id, limit))
                 source_names.append("openalex")
 
@@ -236,16 +245,7 @@ class Orchestrator:
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        all_papers = []
-        metadata = {"sources_queried": source_names, "results_per_source": {}}
-
-        for source_name, result in zip(source_names, results):
-            if isinstance(result, list):
-                all_papers.extend(result)
-                metadata["results_per_source"][source_name] = len(result)
-            else:
-                logger.warning(f"Erreur citations {source_name}: {result}")
-                metadata["results_per_source"][source_name] = 0
+        all_papers, metadata = self._collect(source_names, results, "citations")
 
         papers, duplicates = self.deduplicator.deduplicate(all_papers)
         metadata["total_results"] = len(papers)
@@ -267,7 +267,7 @@ class Orchestrator:
         source_names = []
 
         for source in sources:
-            if source == "openalex" and self.openalex_mailto:
+            if source == "openalex":
                 tasks.append(self._get_references_openalex(paper_id, limit))
                 source_names.append("openalex")
 
@@ -287,16 +287,7 @@ class Orchestrator:
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        all_papers = []
-        metadata = {"sources_queried": source_names, "results_per_source": {}}
-
-        for source_name, result in zip(source_names, results):
-            if isinstance(result, list):
-                all_papers.extend(result)
-                metadata["results_per_source"][source_name] = len(result)
-            else:
-                logger.warning(f"Erreur references {source_name}: {result}")
-                metadata["results_per_source"][source_name] = 0
+        all_papers, metadata = self._collect(source_names, results, "references")
 
         papers, duplicates = self.deduplicator.deduplicate(all_papers)
         metadata["total_results"] = len(papers)
@@ -309,16 +300,41 @@ class Orchestrator:
         paper_id: str,
         limit: int = 10,
     ) -> list[Paper]:
-        """Recupere des articles similaires via S2 SPECTER."""
+        """Recupere des articles similaires via S2 SPECTER.
+
+        Une panne S2 est propagee (l'appelant l'affiche) plutot que
+        maquillee en liste vide.
+        """
         async with SemanticScholarSource(self.s2_api_key) as source:
             return await source.get_recommendations([paper_id], limit=limit)
+
+    @staticmethod
+    def _collect(
+        source_names: list[str], results: list, label: str
+    ) -> tuple[list[Paper], dict]:
+        """Regroupe les resultats de asyncio.gather et note les erreurs."""
+        all_papers: list[Paper] = []
+        metadata = {
+            "sources_queried": source_names,
+            "results_per_source": {},
+            "errors": [],
+        }
+        for source_name, result in zip(source_names, results):
+            if isinstance(result, list):
+                all_papers.extend(result)
+                metadata["results_per_source"][source_name] = len(result)
+            else:
+                logger.warning(f"Erreur {label} {source_name}: {result}")
+                metadata["results_per_source"][source_name] = 0
+                metadata["errors"].append(f"{source_name}: {result}")
+        return all_papers, metadata
 
     # --- Methodes privees pour chaque source ---
 
     async def _search_openalex(
         self, query: str, limit: int, year_min: Optional[int], year_max: Optional[int]
     ) -> list[Paper]:
-        async with OpenAlexSource(self.openalex_mailto) as source:
+        async with OpenAlexSource(self.openalex_mailto, api_key=self.openalex_api_key) as source:
             return await source.search(query, limit, year_min, year_max)
 
     async def _search_s2(
@@ -334,7 +350,7 @@ class Orchestrator:
             return await source.search(query, limit, year_min, year_max)
 
     async def _get_openalex(self, paper_id: str) -> Optional[Paper]:
-        async with OpenAlexSource(self.openalex_mailto) as source:
+        async with OpenAlexSource(self.openalex_mailto, api_key=self.openalex_api_key) as source:
             return await source.get_by_id(paper_id)
 
     async def _get_s2(self, paper_id: str) -> Optional[Paper]:
@@ -346,7 +362,7 @@ class Orchestrator:
             return await source.get_by_id(paper_id)
 
     async def _get_citations_openalex(self, paper_id: str, limit: int) -> list[Paper]:
-        async with OpenAlexSource(self.openalex_mailto) as source:
+        async with OpenAlexSource(self.openalex_mailto, api_key=self.openalex_api_key) as source:
             return await source.get_citations(paper_id, limit)
 
     async def _get_citations_s2(self, paper_id: str, limit: int) -> list[Paper]:
@@ -358,7 +374,7 @@ class Orchestrator:
             return await source.get_citations(paper_id, limit)
 
     async def _get_references_openalex(self, paper_id: str, limit: int) -> list[Paper]:
-        async with OpenAlexSource(self.openalex_mailto) as source:
+        async with OpenAlexSource(self.openalex_mailto, api_key=self.openalex_api_key) as source:
             return await source.get_references(paper_id, limit)
 
     async def _get_references_s2(self, paper_id: str, limit: int) -> list[Paper]:
@@ -491,9 +507,8 @@ class Orchestrator:
         tasks = []
         source_names = []
 
-        if self.openalex_mailto:
-            tasks.append(self._get_author_openalex(author_id))
-            source_names.append("openalex")
+        tasks.append(self._get_author_openalex(author_id))
+        source_names.append("openalex")
 
         tasks.append(self._get_author_s2(author_id))
         source_names.append("semantic_scholar")
@@ -503,6 +518,7 @@ class Orchestrator:
             source_names.append("scopus")
 
         metadata["sources_queried"] = source_names
+        metadata["errors"] = []
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -513,7 +529,8 @@ class Orchestrator:
                 metadata["results_per_source"][source_name] = 1
             else:
                 if isinstance(result, Exception):
-                    logger.debug(f"Erreur {source_name} pour {author_id}: {result}")
+                    logger.warning(f"Erreur {source_name} pour {author_id}: {result}")
+                    metadata["errors"].append(f"{source_name}: {result}")
                 metadata["results_per_source"][source_name] = 0
 
         # Fusionner les resultats si meme auteur trouve sur plusieurs sources
@@ -533,14 +550,14 @@ class Orchestrator:
         tasks = []
         source_names = []
 
-        if self.openalex_mailto:
-            tasks.append(self._search_authors_openalex(name, limit))
-            source_names.append("openalex")
+        tasks.append(self._search_authors_openalex(name, limit))
+        source_names.append("openalex")
 
         tasks.append(self._search_authors_s2(name, limit))
         source_names.append("semantic_scholar")
 
         metadata["sources_queried"] = source_names
+        metadata["errors"] = []
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -552,6 +569,7 @@ class Orchestrator:
             else:
                 if isinstance(result, Exception):
                     logger.warning(f"Erreur recherche auteurs {source_name}: {result}")
+                    metadata["errors"].append(f"{source_name}: {result}")
                 metadata["results_per_source"][source_name] = 0
 
         # Dedupliquer par ORCID
@@ -611,7 +629,7 @@ class Orchestrator:
     # --- Methodes privees auteur ---
 
     async def _get_author_openalex(self, author_id: str) -> Optional[Author]:
-        async with OpenAlexSource(self.openalex_mailto) as source:
+        async with OpenAlexSource(self.openalex_mailto, api_key=self.openalex_api_key) as source:
             return await source.get_author(author_id)
 
     async def _get_author_s2(self, author_id: str) -> Optional[Author]:
@@ -623,7 +641,7 @@ class Orchestrator:
             return await source.get_author(author_id)
 
     async def _search_authors_openalex(self, name: str, limit: int) -> list[Author]:
-        async with OpenAlexSource(self.openalex_mailto) as source:
+        async with OpenAlexSource(self.openalex_mailto, api_key=self.openalex_api_key) as source:
             return await source.search_authors(name, limit)
 
     async def _search_authors_s2(self, name: str, limit: int) -> list[Author]:

@@ -3,7 +3,7 @@
 from typing import Optional
 
 from ..models import Paper, Author, PaperSource
-from ..rate_limiting import RateLimiter, RateLimitConfig
+from ..rate_limiting import RateLimiter, RateLimitConfig, get_limiter
 from .base import BaseSource, SourceError
 
 
@@ -15,7 +15,7 @@ class ScopusSource(BaseSource):
 
     def __init__(self, api_key: str, limiter: Optional[RateLimiter] = None):
         if limiter is None:
-            limiter = RateLimiter(
+            limiter = get_limiter(
                 "scopus",
                 RateLimitConfig(
                     requests_per_second=2.0,  # Conservateur
@@ -88,7 +88,9 @@ class ScopusSource(BaseSource):
 
             return papers
 
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     async def get_by_id(self, paper_id: str) -> Optional[Paper]:
@@ -121,7 +123,9 @@ class ScopusSource(BaseSource):
 
             return self._parse_abstract_response(abstract_data)
 
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     async def get_citations(self, paper_id: str, limit: int = 100) -> list[Paper]:
@@ -161,7 +165,9 @@ class ScopusSource(BaseSource):
 
             return papers
 
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return []
 
     async def get_references(self, paper_id: str, limit: int = 100) -> list[Paper]:
@@ -358,7 +364,9 @@ class ScopusSource(BaseSource):
 
             return self._parse_author_response(author_data)
 
-        except SourceError:
+        except SourceError as exc:
+            if not exc.is_not_found:
+                raise
             return None
 
     def _parse_author_response(self, data: dict) -> Author:
