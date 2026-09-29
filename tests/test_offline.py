@@ -12,9 +12,9 @@ import httpx
 import pytest
 
 from src.rate_limiting import reset_limiters
-from src.server import format_paper_not_found
+from src.server import format_api_status, format_paper_not_found
 from src.services import Orchestrator
-from src.sources import OpenAlexSource
+from src.sources import OpenAlexSource, SemanticScholarSource
 
 FIXTURES = Path(__file__).parent / "fixtures"
 QUERY = "black carbon glacier albedo"
@@ -191,3 +191,47 @@ def test_author_search_reports_source_errors(mock_http):
 
 def test_sources_share_one_limiter_per_api():
     assert OpenAlexSource().limiter is OpenAlexSource(api_key="x").limiter
+
+
+# --- Semantic Scholar list endpoints ----------------------------------------
+
+
+def test_s2_citations_and_references_do_not_request_tldr(mock_http):
+    # S2 answers 400 "Unrecognized or unsupported fields: [tldr]" on these.
+    mock_http["handler"] = lambda req: httpx.Response(200, json={"data": []})
+
+    async def run():
+        async with SemanticScholarSource() as src:
+            await src.get_citations("DOI:10.5194/tc-9-1385-2015", limit=5)
+            await src.get_references("DOI:10.5194/tc-9-1385-2015", limit=5)
+
+    asyncio.run(run())
+    assert len(mock_http["requests"]) == 2
+    for req in mock_http["requests"]:
+        assert "tldr" not in req.url.params["fields"]
+
+
+# --- get_api_status really calls each source -------------------------------
+
+
+def test_api_status_reports_refused_key_as_error(mock_http):
+    def handler(req):
+        if req.url.host == "api.elsevier.com":
+            return httpx.Response(401)
+        if req.url.host == "api.openalex.org":
+            return httpx.Response(200, json=load("openalex_search.json"))
+        if req.url.host == "api.crossref.org":
+            return httpx.Response(200, json=load("crossref_search.json"))
+        if req.url.host == "www.ebi.ac.uk":
+            return httpx.Response(200, json={"resultList": {"result": []}})
+        return httpx.Response(200, json={"data": []})
+
+    mock_http["handler"] = handler
+    orch = make_orchestrator(scopus_api_key="EXPIRED")
+
+    text = asyncio.run(format_api_status(orch))
+
+    assert "- **scopus**: ERREUR" in text
+    assert "401" in text
+    assert "- **openalex**: OK" in text
+    assert "- **scix**: Non configure" in text

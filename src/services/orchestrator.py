@@ -329,6 +329,41 @@ class Orchestrator:
                 metadata["errors"].append(f"{source_name}: {result}")
         return all_papers, metadata
 
+    async def check_sources(
+        self, timeout: float = 20.0
+    ) -> dict[str, tuple[bool, float, str]]:
+        """Fait une petite requete reelle a chaque source configuree.
+
+        Retourne {source: (ok, secondes, detail)}. Une cle presente mais
+        refusee (401/403) apparait ainsi comme une erreur, pas comme OK.
+        """
+        probes = {
+            "openalex": self._search_openalex,
+            "semantic_scholar": self._search_s2,
+            "scopus": self._search_scopus,
+            "scix": self._search_scix,
+            "core": self._search_core,
+            "crossref": self._search_crossref,
+            "europe_pmc": self._search_europepmc,
+        }
+        names = [n for n in self.get_available_sources() if n in probes]
+        loop = asyncio.get_running_loop()
+
+        async def probe(name: str) -> tuple[bool, float, str]:
+            start = loop.time()
+            try:
+                papers = await asyncio.wait_for(
+                    probes[name]("glacier albedo", 1, None, None), timeout
+                )
+            except asyncio.TimeoutError:
+                return False, loop.time() - start, f"pas de reponse apres {timeout:.0f} s"
+            except Exception as e:
+                return False, loop.time() - start, str(e) or type(e).__name__
+            return True, loop.time() - start, f"{len(papers)} resultat(s)"
+
+        results = await asyncio.gather(*(probe(n) for n in names))
+        return dict(zip(names, results))
+
     # --- Methodes privees pour chaque source ---
 
     async def _search_openalex(

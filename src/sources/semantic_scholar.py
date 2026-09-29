@@ -24,6 +24,10 @@ class SemanticScholarSource(BaseSource):
         "authors,fieldsOfStudy,isOpenAccess,openAccessPdf,tldr"
     )
 
+    # Les endpoints de liste (citations, references, recommandations) refusent
+    # le champ tldr: S2 repond 400 "Unrecognized or unsupported fields: [tldr]".
+    LIST_FIELDS = PAPER_FIELDS.replace(",tldr", "")
+
     def __init__(
         self, api_key: Optional[str] = None, limiter: Optional[RateLimiter] = None
     ):
@@ -138,7 +142,7 @@ class SemanticScholarSource(BaseSource):
             paper_id = f"DOI:{paper_id}"
 
         params = {
-            "fields": self.PAPER_FIELDS,
+            "fields": self.LIST_FIELDS,
             "limit": min(limit, 1000),
         }
 
@@ -170,7 +174,7 @@ class SemanticScholarSource(BaseSource):
             paper_id = f"DOI:{paper_id}"
 
         params = {
-            "fields": self.PAPER_FIELDS,
+            "fields": self.LIST_FIELDS,
             "limit": min(limit, 1000),
         }
 
@@ -213,7 +217,7 @@ class SemanticScholarSource(BaseSource):
 
         params = {
             "limit": min(limit, 500),
-            "fields": self.PAPER_FIELDS,
+            "fields": self.LIST_FIELDS,
         }
 
         try:

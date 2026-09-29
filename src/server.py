@@ -179,7 +179,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="get_api_status",
             description=(
-                "Affiche le statut des APIs configurees et leurs quotas."
+                "Teste chaque API configuree par un vrai appel et affiche son statut."
             ),
             inputSchema={
                 "type": "object",
@@ -281,7 +281,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         elif name == "get_api_status":
             return [TextContent(
                 type="text",
-                text=format_api_status(orch),
+                text=await format_api_status(orch),
             )]
 
         elif name == "get_author":
@@ -501,17 +501,22 @@ def format_similar_results(papers: list) -> str:
     return "\n".join(lines)
 
 
-def format_api_status(orch: Orchestrator) -> str:
-    """Formate le statut des APIs."""
+async def format_api_status(orch: Orchestrator) -> str:
+    """Teste chaque source par un vrai appel et formate le statut."""
     lines = [
         "## Statut des APIs",
         "",
     ]
 
-    sources = orch.get_available_sources()
+    checks = await orch.check_sources()
 
     for source in ["openalex", "semantic_scholar", "scopus", "scix", "core", "crossref", "europe_pmc"]:
-        status = "OK" if source in sources else "Non configure"
+        if source not in checks:
+            status = "Non configure"
+        else:
+            ok, seconds, detail = checks[source]
+            label = "OK" if ok else "ERREUR"
+            status = f"{label} ({seconds:.1f} s, {detail})"
         lines.append(f"- **{source}**: {status}")
 
     lines.append("")

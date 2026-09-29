@@ -132,9 +132,9 @@ async def get_similar_papers(paper_id: str, limit: int = 10) -> str:
 
 @mcp.tool()
 async def get_api_status() -> str:
-    """Affiche le statut des APIs configurees et leurs quotas."""
+    """Teste chaque API configuree par un vrai appel et affiche son statut."""
     orch = get_orchestrator()
-    return format_api_status(orch)
+    return await format_api_status(orch)
 
 
 @mcp.tool()
