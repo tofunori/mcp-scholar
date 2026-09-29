@@ -15,6 +15,9 @@ logging.basicConfig(
     level=getattr(logging, config.log_level),
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+# httpx logs full request URLs at INFO, including OpenAlex's api_key
+# query parameter; keep it quiet so keys never reach the service logs.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # Creer le serveur MCP
