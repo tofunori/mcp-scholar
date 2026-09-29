@@ -55,6 +55,42 @@ class Orchestrator:
             if available
         ]
 
+    # DOI known to every source; used to probe each API with a real lookup.
+    PROBE_DOI = "10.5194/tc-9-1385-2015"
+    PROBE_TIMEOUT = 20.0
+
+    async def check_sources(self) -> dict[str, Optional[str]]:
+        """Probe each configured source with one real lookup.
+
+        Returns {source: None if the API answered, else an error message}.
+        A "not found" answer still counts as reachable: only authentication,
+        rate-limit, network or server failures are reported.
+        """
+        probes = {
+            "openalex": self._get_openalex,
+            "semantic_scholar": self._get_s2,
+            "scopus": self._get_scopus,
+            "scix": self._get_scix,
+            "core": self._get_core,
+            "crossref": self._get_crossref,
+            "europe_pmc": self._get_europepmc,
+        }
+        names = [n for n in self.get_available_sources() if n in probes]
+
+        async def probe(name: str) -> Optional[str]:
+            try:
+                await asyncio.wait_for(
+                    probes[name](self.PROBE_DOI), timeout=self.PROBE_TIMEOUT
+                )
+            except asyncio.TimeoutError:
+                return f"pas de reponse en {self.PROBE_TIMEOUT:.0f} s"
+            except Exception as exc:
+                return str(exc)
+            return None
+
+        results = await asyncio.gather(*(probe(n) for n in names))
+        return dict(zip(names, results))
+
     async def search(
         self,
         query: str,
