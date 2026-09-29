@@ -1,0 +1,2361 @@
+{
+ "meta": {
+  "count": 6024,
+  "page": 1,
+  "per_page": 3
+ },
+ "results": [
+  {
+   "id": "https://openalex.org/W2041376954",
+   "doi": "https://doi.org/10.1016/j.atmosres.2008.09.007",
+   "title": "Black Carbon (BC) in the snow of glaciers in west China and its potential effects on albedos",
+   "publication_year": 2008,
+   "publication_date": "2008-09-22",
+   "abstract_inverted_index": null,
+   "cited_by_count": 236,
+   "authorships": [
+    {
+     "author_position": "first",
+     "author": {
+      "id": "https://openalex.org/A5024844570",
+      "display_name": "Jing Ming",
+      "orcid": "https://orcid.org/0000-0001-5527-3768",
+      "observed_orcids": [
+       "https://orcid.org/0000-0001-5527-3768"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I141301092",
+       "display_name": "China Meteorological Administration",
+       "ror": "https://ror.org/00bx3rb98",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I141301092"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I19820366",
+       "display_name": "Chinese Academy of Sciences",
+       "ror": "https://ror.org/034t30j35",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I19820366"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210126061",
+       "display_name": "Institute of Geology and Geophysics",
+       "ror": "https://ror.org/030vmwa78",
+       "country_code": "CN",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I19820366",
+        "https://openalex.org/I4210126061"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210133131",
+       "display_name": "Chinese Academy of Meteorological Sciences",
+       "ror": "https://ror.org/034b53w38",
+       "country_code": "CN",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4210133131"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210165038",
+       "display_name": "University of Chinese Academy of Sciences",
+       "ror": "https://ror.org/05qbk4x57",
+       "country_code": "CN",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I19820366",
+        "https://openalex.org/I4210165038"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4388446370",
+       "display_name": "Beijing Climate Center",
+       "ror": "https://ror.org/03kb2jw75",
+       "country_code": null,
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4388446370"
+       ]
+      }
+     ],
+     "is_corresponding": true,
+     "raw_author_name": "Jing Ming",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5019691016",
+      "display_name": "Cunde Xiao",
+      "orcid": "https://orcid.org/0000-0002-1706-4794",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-1706-4794"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I19820366",
+       "display_name": "Chinese Academy of Sciences",
+       "ror": "https://ror.org/034t30j35",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I19820366"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210133131",
+       "display_name": "Chinese Academy of Meteorological Sciences",
+       "ror": "https://ror.org/034b53w38",
+       "country_code": "CN",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4210133131"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Cunde Xiao",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5112340787",
+      "display_name": "H. Cachier",
+      "orcid": null,
+      "observed_orcids": []
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I1294671590",
+       "display_name": "Centre National de la Recherche Scientifique",
+       "ror": "https://ror.org/02feahw73",
+       "country_code": "FR",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I1294671590"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I2738703131",
+       "display_name": "Commissariat à l'Énergie Atomique et aux Énergies Alternatives",
+       "ror": "https://ror.org/00jjx8s55",
+       "country_code": "FR",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I2738703131"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210124937",
+       "display_name": "Laboratoire des Sciences du Climat et de l'Environnement",
+       "ror": "https://ror.org/03dsd0g48",
+       "country_code": "FR",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I1294671590",
+        "https://openalex.org/I195731000",
+        "https://openalex.org/I2738703131",
+        "https://openalex.org/I277688954",
+        "https://openalex.org/I4210113668",
+        "https://openalex.org/I4210124937",
+        "https://openalex.org/I4210148025"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Helene Cachier",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5113726120",
+      "display_name": "Dahe Qin",
+      "orcid": null,
+      "observed_orcids": []
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I141301092",
+       "display_name": "China Meteorological Administration",
+       "ror": "https://ror.org/00bx3rb98",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I141301092"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I19820366",
+       "display_name": "Chinese Academy of Sciences",
+       "ror": "https://ror.org/034t30j35",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I19820366"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4388446370",
+       "display_name": "Beijing Climate Center",
+       "ror": "https://ror.org/03kb2jw75",
+       "country_code": null,
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4388446370"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Dahe Qin",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5086005303",
+      "display_name": "Xiang Qin",
+      "orcid": "https://orcid.org/0000-0002-1998-595X",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-1998-595X"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I19820366",
+       "display_name": "Chinese Academy of Sciences",
+       "ror": "https://ror.org/034t30j35",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I19820366"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Xiang Qin",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": null,
+      "display_name": "Zhongqi Li",
+      "orcid": null,
+      "observed_orcids": []
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I19820366",
+       "display_name": "Chinese Academy of Sciences",
+       "ror": "https://ror.org/034t30j35",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I19820366"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Zhongqi Li",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "last",
+     "author": {
+      "id": "https://openalex.org/A5022591088",
+      "display_name": "Jianchen Pu",
+      "orcid": "https://orcid.org/0000-0003-3966-5811",
+      "observed_orcids": [
+       "https://orcid.org/0000-0003-3966-5811"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I19820366",
+       "display_name": "Chinese Academy of Sciences",
+       "ror": "https://ror.org/034t30j35",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I19820366"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Jianchen Pu",
+     "raw_orcid": null
+    }
+   ],
+   "primary_location": {
+    "id": "doi:10.1016/j.atmosres.2008.09.007",
+    "is_oa": false,
+    "landing_page_url": "https://doi.org/10.1016/j.atmosres.2008.09.007",
+    "pdf_url": null,
+    "source": {
+     "id": "https://openalex.org/S171488675",
+     "display_name": "Atmospheric Research",
+     "issn_l": "0169-8095",
+     "issn": [
+      "0169-8095",
+      "1873-2895"
+     ],
+     "is_oa": false,
+     "is_in_doaj": false,
+     "is_core": true,
+     "listed_in": [
+      "cwts-core",
+      "jufo-1",
+      "ki-jl-1",
+      "norway-1"
+     ],
+     "host_organization": "https://openalex.org/P4310320990",
+     "host_organization_name": "Elsevier BV",
+     "host_organization_lineage": [
+      "https://openalex.org/P4310320990"
+     ],
+     "host_organization_lineage_names": [
+      "Elsevier BV"
+     ],
+     "type": "journal"
+    },
+    "license": null,
+    "license_id": null,
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "Atmospheric Research",
+    "raw_type": "journal-article"
+   },
+   "open_access": {
+    "is_oa": false,
+    "oa_status": "closed",
+    "oa_url": null,
+    "any_repository_has_fulltext": false
+   },
+   "concepts": [
+    {
+     "id": "https://openalex.org/C197046000",
+     "wikidata": "https://www.wikidata.org/wiki/Q7561",
+     "display_name": "Snow",
+     "level": 2,
+     "score": 0.8501362800598145
+    },
+    {
+     "id": "https://openalex.org/C100834320",
+     "wikidata": "https://www.wikidata.org/wiki/Q35666",
+     "display_name": "Glacier",
+     "level": 2,
+     "score": 0.8155319690704346
+    },
+    {
+     "id": "https://openalex.org/C6350597",
+     "wikidata": "https://www.wikidata.org/wiki/Q339495",
+     "display_name": "Altitude (triangle)",
+     "level": 2,
+     "score": 0.5960150361061096
+    }
+   ],
+   "type": "article",
+   "referenced_works": [
+    "https://openalex.org/W1520428197",
+    "https://openalex.org/W1548396839",
+    "https://openalex.org/W1968131557"
+   ]
+  },
+  {
+   "id": "https://openalex.org/W2124061257",
+   "doi": "https://doi.org/10.5194/acp-10-6603-2010",
+   "title": "Estimated impact of black carbon deposition during pre-monsoon season from Nepal Climate Observatory – Pyramid data and snow albedo changes over Himalayan glaciers",
+   "publication_year": 2010,
+   "publication_date": "2010-07-19",
+   "abstract_inverted_index": {
+    "Abstract.": [
+     0
+    ],
+    "The": [
+     1,
+     128
+    ],
+    "possible": [
+     2
+    ],
+    "minimal": [
+     3,
+     89
+    ],
+    "range": [
+     4
+    ],
+    "of": [
+     5,
+     15,
+     34,
+     74,
+     92,
+     99,
+     144,
+     185,
+     189,
+     199,
+     238,
+     241,
+     248,
+     250,
+     254,
+     261,
+     291,
+     323,
+     343
+    ],
+    "reduction": [
+     6
+    ],
+    "in": [
+     7,
+     19,
+     54,
+     125,
+     201,
+     205,
+     264,
+     277,
+     288,
+     360
+    ],
+    "snow": [
+     8,
+     182,
+     202,
+     265,
+     285,
+     306,
+     328,
+     333
+    ],
+    "surface": [
+     9,
+     266
+    ],
+    "albedo": [
+     10,
+     207,
+     212,
+     307,
+     334,
+     348
+    ],
+    "due": [
+     11
+    ],
+    "to": [
+     12,
+     150,
+     193,
+     235,
+     272,
+     300
+    ],
+    "dry": [
+     13,
+     147
+    ],
+    "deposition": [
+     14,
+     61,
+     73,
+     90,
+     130,
+     148,
+     154,
+     315,
+     345
+    ],
+    "black": [
+     16
+    ],
+    "carbon": [
+     17
+    ],
+    "(BC)": [
+     18
+    ],
+    "the": [
+     20,
+     32,
+     42,
+     55,
+     81,
+     126,
+     132,
+     145,
+     151,
+     162,
+     168,
+     173,
+     216,
+     246,
+     251,
+     278,
+     289,
+     321,
+     340,
+     357,
+     361
+    ],
+    "pre-monsoon": [
+     21,
+     268
+    ],
+    "period": [
+     22
+    ],
+    "(March–May)": [
+     23
+    ],
+    "was": [
+     24,
+     63,
+     109,
+     136,
+     140
+    ],
+    "estimated": [
+     25,
+     64,
+     146,
+     152,
+     231
+    ],
+    "as": [
+     26,
+     65,
+     111
+    ],
+    "a": [
+     27,
+     71,
+     85,
+     88,
+     197,
+     225,
+     255,
+     302,
+     312
+    ],
+    "lower": [
+     28,
+     303
+    ],
+    "bound": [
+     29,
+     304
+    ],
+    "together": [
+     30
+    ],
+    "with": [
+     31,
+     87,
+     96,
+     224
+    ],
+    "estimation": [
+     33
+    ],
+    "its": [
+     35
+    ],
+    "accuracy,": [
+     36
+    ],
+    "based": [
+     37,
+     83
+    ],
+    "on": [
+     38,
+     84,
+     167,
+     349
+    ],
+    "atmospheric": [
+     39,
+     97,
+     324,
+     352
+    ],
+    "observations": [
+     40
+    ],
+    "at": [
+     41,
+     50,
+     80,
+     106,
+     274,
+     356
+    ],
+    "Nepal": [
+     43
+    ],
+    "Climate": [
+     44
+    ],
+    "Observatory": [
+     45
+    ],
+    "–": [
+     46
+    ],
+    "Pyramid": [
+     47
+    ],
+    "(NCO-P)": [
+     48
+    ],
+    "sited": [
+     49
+    ],
+    "5079": [
+     51
+    ],
+    "m": [
+     52,
+     94
+    ],
+    "a.s.l.": [
+     53
+    ],
+    "Himalayan": [
+     56,
+     279
+    ],
+    "region.": [
+     57
+    ],
+    "A": [
+     58
+    ],
+    "total": [
+     59,
+     72
+    ],
+    "BC": [
+     60,
+     101,
+     104,
+     119,
+     129,
+     153,
+     157,
+     163,
+     175,
+     200,
+     262,
+     297,
+     344
+    ],
+    "rate": [
+     62
+    ],
+    "2.89": [
+     66
+    ],
+    "μg": [
+     67,
+     76,
+     179
+    ],
+    "m−2": [
+     68,
+     77
+    ],
+    "day−1": [
+     69
+    ],
+    "providing": [
+     70
+    ],
+    "266": [
+     75
+    ],
+    "for": [
+     78,
+     267,
+     305
+    ],
+    "March–May": [
+     79
+    ],
+    "site,": [
+     82
+    ],
+    "calculation": [
+     86
+    ],
+    "velocity": [
+     91
+    ],
+    "1.0×10−4": [
+     93
+    ],
+    "s−1": [
+     95
+    ],
+    "data": [
+     98,
+     135,
+     354
+    ],
+    "equivalent": [
+     100,
+     118,
+     156,
+     247
+    ],
+    "concentration.": [
+     102
+    ],
+    "Main": [
+     103
+    ],
+    "size": [
+     105,
+     123,
+     133
+    ],
+    "NCO-P": [
+     107,
+     194
+    ],
+    "site": [
+     108
+    ],
+    "determined": [
+     110
+    ],
+    "103.1–669.8": [
+     112
+    ],
+    "nm": [
+     113
+    ],
+    "by": [
+     114
+    ],
+    "correlation": [
+     115
+    ],
+    "analyses": [
+     116
+    ],
+    "between": [
+     117
+    ],
+    "concentration": [
+     120,
+     158,
+     176,
+     198,
+     263
+    ],
+    "and": [
+     121,
+     218,
+     283,
+     326,
+     332,
+     346
+    ],
+    "particulate": [
+     122
+    ],
+    "distributions": [
+     124
+    ],
+    "atmosphere.": [
+     127
+    ],
+    "from": [
+     131,
+     155,
+     295
+    ],
+    "distribution": [
+     134
+    ],
+    "also": [
+     137
+    ],
+    "estimated.": [
+     138
+    ],
+    "It": [
+     139
+    ],
+    "found": [
+     141
+    ],
+    "that": [
+     142
+    ],
+    "8.7%": [
+     143
+    ],
+    "corresponds": [
+     149
+    ],
+    "data.": [
+     159
+    ],
+    "If": [
+     160
+    ],
+    "all": [
+     161
+    ],
+    "is": [
+     164,
+     177,
+     245,
+     270
+    ],
+    "deposited": [
+     165
+    ],
+    "uniformly": [
+     166
+    ],
+    "top": [
+     169
+    ],
+    "2-cm": [
+     170
+    ],
+    "pure": [
+     171
+    ],
+    "snow,": [
+     172,
+     350
+    ],
+    "corresponding": [
+     174
+    ],
+    "26.0–68.2": [
+     178
+    ],
+    "kg−1,": [
+     180
+    ],
+    "assuming": [
+     181,
+     210
+    ],
+    "density": [
+     183
+    ],
+    "variations": [
+     184
+    ],
+    "195–512": [
+     186
+    ],
+    "kg": [
+     187
+    ],
+    "m−3": [
+     188
+    ],
+    "Yala": [
+     190
+    ],
+    "Glacier": [
+     191
+    ],
+    "close": [
+     192
+    ],
+    "site.": [
+     195
+    ],
+    "Such": [
+     196
+    ],
+    "could": [
+     203
+    ],
+    "result": [
+     204
+    ],
+    "2.0–5.2%": [
+     206
+    ],
+    "reductions.": [
+     208
+    ],
+    "By": [
+     209
+    ],
+    "these": [
+     211
+    ],
+    "reductions": [
+     213,
+     232
+    ],
+    "continue": [
+     214
+    ],
+    "throughout": [
+     215
+    ],
+    "year,": [
+     217
+    ],
+    "then": [
+     219
+    ],
+    "applying": [
+     220
+    ],
+    "simple": [
+     221
+    ],
+    "numerical": [
+     222
+    ],
+    "experiments": [
+     223
+    ],
+    "glacier": [
+     226
+    ],
+    "mass": [
+     227
+    ],
+    "balance": [
+     228
+    ],
+    "model,": [
+     229
+    ],
+    "we": [
+     230,
+     310,
+     319
+    ],
+    "would": [
+     233
+    ],
+    "lead": [
+     234
+    ],
+    "runoff": [
+     236,
+     244
+    ],
+    "increases": [
+     237
+    ],
+    "70–204": [
+     239
+    ],
+    "mm": [
+     240
+    ],
+    "water.": [
+     242
+    ],
+    "This": [
+     243,
+     336
+    ],
+    "11.6–33.9%": [
+     249
+    ],
+    "annual": [
+     252
+    ],
+    "discharge": [
+     253
+    ],
+    "typical": [
+     256
+    ],
+    "Tibetan": [
+     257
+    ],
+    "glacier.": [
+     258
+    ],
+    "Our": [
+     259,
+     293
+    ],
+    "estimates": [
+     260,
+     294
+    ],
+    "season": [
+     269
+    ],
+    "comparable": [
+     271
+    ],
+    "those": [
+     273
+    ],
+    "similar": [
+     275
+    ],
+    "altitudes": [
+     276
+    ],
+    "region,": [
+     280
+    ],
+    "where": [
+     281
+    ],
+    "glaciers": [
+     282
+    ],
+    "perpetual": [
+     284
+    ],
+    "regions": [
+     286
+    ],
+    "begin,": [
+     287
+    ],
+    "vicinity": [
+     290
+    ],
+    "NCO-P.": [
+     292
+    ],
+    "only": [
+     296
+    ],
+    "are": [
+     298
+    ],
+    "likely": [
+     299
+    ],
+    "represent": [
+     301
+    ],
+    "reductions,": [
+     308
+    ],
+    "because": [
+     309
+    ],
+    "used": [
+     311
+    ],
+    "fixed": [
+     313
+    ],
+    "slower": [
+     314
+    ],
+    "velocity.": [
+     316
+    ],
+    "In": [
+     317
+    ],
+    "addition,": [
+     318
+    ],
+    "excluded": [
+     320
+    ],
+    "effects": [
+     322
+    ],
+    "wind": [
+     325
+    ],
+    "turbulence,": [
+     327
+    ],
+    "aging,": [
+     329
+    ],
+    "dust": [
+     330
+    ],
+    "deposition,": [
+     331
+    ],
+    "feedbacks.": [
+     335
+    ],
+    "preliminary": [
+     337
+    ],
+    "study": [
+     338
+    ],
+    "represents": [
+     339
+    ],
+    "first": [
+     341
+    ],
+    "investigation": [
+     342
+    ],
+    "related": [
+     347
+    ],
+    "using": [
+     351
+    ],
+    "aerosol": [
+     353
+    ],
+    "observed": [
+     355
+    ],
+    "southern": [
+     358
+    ],
+    "slope": [
+     359
+    ],
+    "Himalayas.": [
+     362
+    ]
+   },
+   "cited_by_count": 195,
+   "authorships": [
+    {
+     "author_position": "first",
+     "author": {
+      "id": "https://openalex.org/A5078696976",
+      "display_name": "Teppei J. Yasunari",
+      "orcid": "https://orcid.org/0000-0002-9896-9404",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-9896-9404"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I1306266525",
+       "display_name": "Goddard Space Flight Center",
+       "ror": "https://ror.org/0171mag52",
+       "country_code": "US",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I1306266525",
+        "https://openalex.org/I4210124779"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I79272384",
+       "display_name": "University of Maryland, Baltimore County",
+       "ror": "https://ror.org/02qskvh78",
+       "country_code": "US",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I79272384"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "T. J. Yasunari",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5084521253",
+      "display_name": "Paolo Bonasoni",
+      "orcid": "https://orcid.org/0000-0002-8812-5291",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-8812-5291"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I4210096500",
+       "display_name": "Institute of Atmospheric Sciences and Climate",
+       "ror": "https://ror.org/00n8ttd98",
+       "country_code": "IT",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4210096500",
+        "https://openalex.org/I4210155236"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210139422",
+       "display_name": "Ev-K2-Cnr",
+       "ror": "https://ror.org/04s181d41",
+       "country_code": "IT",
+       "type": "nonprofit",
+       "lineage": [
+        "https://openalex.org/I4210139422"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "P. Bonasoni",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5067769357",
+      "display_name": "Paolo Laj",
+      "orcid": "https://orcid.org/0000-0002-6586-0664",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-6586-0664"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I1294671590",
+       "display_name": "Centre National de la Recherche Scientifique",
+       "ror": "https://ror.org/02feahw73",
+       "country_code": "FR",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I1294671590"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210121220",
+       "display_name": "Institut des Géosciences de l'Environnement",
+       "ror": "https://ror.org/01wwcfa26",
+       "country_code": "FR",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I106785703",
+        "https://openalex.org/I1294671590",
+        "https://openalex.org/I2802818602",
+        "https://openalex.org/I4210088668",
+        "https://openalex.org/I4210090127",
+        "https://openalex.org/I4210113730",
+        "https://openalex.org/I4210121220",
+        "https://openalex.org/I4210131494",
+        "https://openalex.org/I4210139971",
+        "https://openalex.org/I4210148025",
+        "https://openalex.org/I4210150872",
+        "https://openalex.org/I4210166444",
+        "https://openalex.org/I4387154391",
+        "https://openalex.org/I899635006"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4210145841",
+       "display_name": "Laboratoire de Glaciologie et Géophysique de l’Environnement",
+       "ror": "https://ror.org/03fgt5a62",
+       "country_code": "FR",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I1294671590",
+        "https://openalex.org/I177483745",
+        "https://openalex.org/I4210145841",
+        "https://openalex.org/I4210148025",
+        "https://openalex.org/I899635006"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I899635006",
+       "display_name": "Université Grenoble Alpes",
+       "ror": "https://ror.org/02rx3b187",
+       "country_code": "FR",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I899635006"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "P. Laj",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5001732143",
+      "display_name": "Koji Fujita",
+      "orcid": "https://orcid.org/0000-0003-3753-4981",
+      "observed_orcids": [
+       "https://orcid.org/0000-0003-3753-4981"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I60134161",
+       "display_name": "Nagoya University",
+       "ror": "https://ror.org/04chrp450",
+       "country_code": "JP",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I60134161"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "K. Fujita",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5064076320",
+      "display_name": "Elisa Vuillermoz",
+      "orcid": null,
+      "observed_orcids": []
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I4210139422",
+       "display_name": "Ev-K2-Cnr",
+       "ror": "https://ror.org/04s181d41",
+       "country_code": "IT",
+       "type": "nonprofit",
+       "lineage": [
+        "https://openalex.org/I4210139422"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "E. Vuillermoz",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5033428767",
+      "display_name": "Angela Marinoni",
+      "orcid": "https://orcid.org/0000-0002-6580-7126",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-6580-7126"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I4210096500",
+       "display_name": "Institute of Atmospheric Sciences and Climate",
+       "ror": "https://ror.org/00n8ttd98",
+       "country_code": "IT",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4210096500",
+        "https://openalex.org/I4210155236"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "A. Marinoni",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5013159030",
+      "display_name": "Paolo Cristofanelli",
+      "orcid": "https://orcid.org/0000-0001-5666-9131",
+      "observed_orcids": [
+       "https://orcid.org/0000-0001-5666-9131"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I4210096500",
+       "display_name": "Institute of Atmospheric Sciences and Climate",
+       "ror": "https://ror.org/00n8ttd98",
+       "country_code": "IT",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4210096500",
+        "https://openalex.org/I4210155236"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "P. Cristofanelli",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5059244294",
+      "display_name": "Rocco Duchi",
+      "orcid": null,
+      "observed_orcids": []
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I4210096500",
+       "display_name": "Institute of Atmospheric Sciences and Climate",
+       "ror": "https://ror.org/00n8ttd98",
+       "country_code": "IT",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4210096500",
+        "https://openalex.org/I4210155236"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "R. Duchi",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5038015574",
+      "display_name": "Gianni Tartari",
+      "orcid": "https://orcid.org/0000-0002-8495-6960",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-8495-6960"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I4210118596",
+       "display_name": "Water Research Institute",
+       "ror": "https://ror.org/02db0kh50",
+       "country_code": "IT",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I4210118596",
+        "https://openalex.org/I4210155236"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "G. Tartari",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "last",
+     "author": {
+      "id": "https://openalex.org/A5067292344",
+      "display_name": "K.-M. Lau",
+      "orcid": null,
+      "observed_orcids": []
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I1306266525",
+       "display_name": "Goddard Space Flight Center",
+       "ror": "https://ror.org/0171mag52",
+       "country_code": "US",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I1306266525",
+        "https://openalex.org/I4210124779"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "K.-M. Lau",
+     "raw_orcid": null
+    }
+   ],
+   "primary_location": {
+    "id": "doi:10.5194/acp-10-6603-2010",
+    "is_oa": true,
+    "landing_page_url": "https://doi.org/10.5194/acp-10-6603-2010",
+    "pdf_url": "https://acp.copernicus.org/articles/10/6603/2010/acp-10-6603-2010.pdf",
+    "source": {
+     "id": "https://openalex.org/S162708223",
+     "display_name": "Atmospheric chemistry and physics",
+     "issn_l": "1680-7316",
+     "issn": [
+      "1680-7316",
+      "1680-7324"
+     ],
+     "is_oa": true,
+     "is_in_doaj": true,
+     "is_core": true,
+     "listed_in": [
+      "cwts-core",
+      "doaj",
+      "jufo-3",
+      "norway-2"
+     ],
+     "host_organization": "https://openalex.org/P4310313756",
+     "host_organization_name": "Copernicus Publications",
+     "host_organization_lineage": [
+      "https://openalex.org/P4310313756"
+     ],
+     "host_organization_lineage_names": [
+      "Copernicus Publications"
+     ],
+     "type": "journal"
+    },
+    "license": "cc-by",
+    "license_id": "https://openalex.org/licenses/cc-by",
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "Atmospheric Chemistry and Physics",
+    "raw_type": "journal-article"
+   },
+   "open_access": {
+    "is_oa": true,
+    "oa_status": "gold",
+    "oa_url": "https://acp.copernicus.org/articles/10/6603/2010/acp-10-6603-2010.pdf",
+    "any_repository_has_fulltext": true
+   },
+   "concepts": [
+    {
+     "id": "https://openalex.org/C197046000",
+     "wikidata": "https://www.wikidata.org/wiki/Q7561",
+     "display_name": "Snow",
+     "level": 2,
+     "score": 0.7869613766670227
+    },
+    {
+     "id": "https://openalex.org/C195886398",
+     "wikidata": "https://www.wikidata.org/wiki/Q2110050",
+     "display_name": "Albedo (alchemy)",
+     "level": 3,
+     "score": 0.780630350112915
+    },
+    {
+     "id": "https://openalex.org/C100834320",
+     "wikidata": "https://www.wikidata.org/wiki/Q35666",
+     "display_name": "Glacier",
+     "level": 2,
+     "score": 0.695557177066803
+    }
+   ],
+   "type": "article",
+   "referenced_works": [
+    "https://openalex.org/W281240180",
+    "https://openalex.org/W576222870",
+    "https://openalex.org/W1546866202"
+   ]
+  },
+  {
+   "id": "https://openalex.org/W1794746972",
+   "doi": "https://doi.org/10.5194/tc-9-1385-2015",
+   "title": "The impact of Saharan dust and black carbon on albedo and long-term mass balance of an Alpine glacier",
+   "publication_year": 2015,
+   "publication_date": "2015-07-30",
+   "abstract_inverted_index": {
+    "Abstract.": [
+     0
+    ],
+    "Light-absorbing": [
+     1
+    ],
+    "impurities": [
+     2
+    ],
+    "in": [
+     3
+    ],
+    "snow": [
+     4,
+     29,
+     130
+    ],
+    "and": [
+     5,
+     34,
+     40,
+     78,
+     97,
+     109,
+     119,
+     123,
+     137,
+     161,
+     198,
+     219
+    ],
+    "ice": [
+     6
+    ],
+    "control": [
+     7
+    ],
+    "glacier": [
+     8,
+     41,
+     124
+    ],
+    "melt": [
+     9,
+     108,
+     155
+    ],
+    "as": [
+     10
+    ],
+    "shortwave": [
+     11
+    ],
+    "radiation": [
+     12
+    ],
+    "represents": [
+     13
+    ],
+    "the": [
+     14,
+     18,
+     25,
+     49,
+     81,
+     105,
+     113,
+     117,
+     132,
+     140,
+     148,
+     151,
+     162,
+     206
+    ],
+    "main": [
+     15
+    ],
+    "component": [
+     16
+    ],
+    "of": [
+     17,
+     28,
+     64,
+     75,
+     90,
+     107,
+     134,
+     186,
+     217
+    ],
+    "surface": [
+     19,
+     118,
+     209
+    ],
+    "energy": [
+     20
+    ],
+    "balance.": [
+     21,
+     43,
+     126
+    ],
+    "Here,": [
+     22
+    ],
+    "we": [
+     23
+    ],
+    "investigate": [
+     24
+    ],
+    "long-term": [
+     26
+    ],
+    "effect": [
+     27
+    ],
+    "impurities,": [
+     30
+    ],
+    "i.e.,": [
+     31
+    ],
+    "mineral": [
+     32,
+     76,
+     187
+    ],
+    "dust": [
+     33,
+     77,
+     136,
+     218
+    ],
+    "black": [
+     35
+    ],
+    "carbon": [
+     36
+    ],
+    "(BC),": [
+     37
+    ],
+    "on": [
+     38,
+     55,
+     72,
+     112,
+     121,
+     147,
+     150
+    ],
+    "albedo": [
+     39,
+     122,
+     143,
+     210
+    ],
+    "mass": [
+     42,
+     66,
+     95,
+     125,
+     165,
+     196,
+     228
+    ],
+    "The": [
+     44,
+     189
+    ],
+    "analysis": [
+     45
+    ],
+    "was": [
+     46,
+     84,
+     101,
+     156,
+     167,
+     211
+    ],
+    "performed": [
+     47
+    ],
+    "over": [
+     48,
+     80
+    ],
+    "period": [
+     50
+    ],
+    "1914–2014": [
+     51
+    ],
+    "for": [
+     52
+    ],
+    "two": [
+     53,
+     87
+    ],
+    "sites": [
+     54
+    ],
+    "Claridenfirn,": [
+     56
+    ],
+    "Swiss": [
+     57
+    ],
+    "Alps,": [
+     58
+    ],
+    "where": [
+     59
+    ],
+    "an": [
+     60
+    ],
+    "outstanding": [
+     61
+    ],
+    "100-year": [
+     62
+    ],
+    "record": [
+     63
+    ],
+    "seasonal": [
+     65
+    ],
+    "balance": [
+     67,
+     96,
+     166
+    ],
+    "measurements": [
+     68
+    ],
+    "is": [
+     69,
+     179
+    ],
+    "available.": [
+     70
+    ],
+    "Information": [
+     71
+    ],
+    "atmospheric": [
+     73
+    ],
+    "deposition": [
+     74
+    ],
+    "BC": [
+     79,
+     138,
+     174
+    ],
+    "last": [
+     82
+    ],
+    "century": [
+     83
+    ],
+    "retrieved": [
+     85
+    ],
+    "from": [
+     86
+    ],
+    "firn/ice": [
+     88
+    ],
+    "cores": [
+     89
+    ],
+    "high-alpine": [
+     91
+    ],
+    "sites.": [
+     92
+    ],
+    "A": [
+     93
+    ],
+    "combined": [
+     94
+    ],
+    "snow/firn": [
+     98
+    ],
+    "layer": [
+     99
+    ],
+    "model": [
+     100
+    ],
+    "employed": [
+     102
+    ],
+    "to": [
+     103,
+     128,
+     223
+    ],
+    "assess": [
+     104
+    ],
+    "effects": [
+     106
+    ],
+    "accumulation": [
+     110
+    ],
+    "processes": [
+     111
+    ],
+    "impurity": [
+     114,
+     199
+    ],
+    "concentration": [
+     115
+    ],
+    "at": [
+     116,
+     205
+    ],
+    "thus": [
+     120
+    ],
+    "Compared": [
+     127
+    ],
+    "pure": [
+     129
+    ],
+    "conditions,": [
+     131
+    ],
+    "presence": [
+     133
+    ],
+    "Saharan": [
+     135
+    ],
+    "lowered": [
+     139
+    ],
+    "mean": [
+     141,
+     163
+    ],
+    "annual": [
+     142,
+     154,
+     164
+    ],
+    "by": [
+     144,
+     158,
+     169,
+     215
+    ],
+    "0.04–0.06": [
+     145
+    ],
+    "depending": [
+     146
+    ],
+    "location": [
+     149
+    ],
+    "glacier.": [
+     152
+    ],
+    "Consequently,": [
+     153
+    ],
+    "increased": [
+     157
+    ],
+    "15–19": [
+     159
+    ],
+    "%,": [
+     160
+    ],
+    "reduced": [
+     168
+    ],
+    "about": [
+     170,
+     180
+    ],
+    "280–490": [
+     171
+    ],
+    "mm": [
+     172
+    ],
+    "w.e.": [
+     173
+    ],
+    "clearly": [
+     175
+    ],
+    "dominated": [
+     176
+    ],
+    "absorption": [
+     177
+    ],
+    "which": [
+     178
+    ],
+    "3": [
+     181
+    ],
+    "times": [
+     182
+    ],
+    "higher": [
+     183
+    ],
+    "than": [
+     184
+    ],
+    "that": [
+     185
+    ],
+    "dust.": [
+     188
+    ],
+    "upper": [
+     190
+    ],
+    "site": [
+     191
+    ],
+    "has": [
+     192
+    ],
+    "experienced": [
+     193
+    ],
+    "mainly": [
+     194
+    ],
+    "positive": [
+     195
+    ],
+    "balances": [
+     197
+    ],
+    "layers": [
+     200,
+     221
+    ],
+    "were": [
+     201
+    ],
+    "continuously": [
+     202
+    ],
+    "buried": [
+     203
+    ],
+    "whereas": [
+     204
+    ],
+    "lower": [
+     207
+    ],
+    "site,": [
+     208
+    ],
+    "more": [
+     212
+    ],
+    "strongly": [
+     213
+    ],
+    "influenced": [
+     214
+    ],
+    "re-exposure": [
+     216
+    ],
+    "BC-enriched": [
+     220
+    ],
+    "due": [
+     222
+    ],
+    "frequent": [
+     224
+    ],
+    "years": [
+     225
+    ],
+    "with": [
+     226
+    ],
+    "negative": [
+     227
+    ],
+    "balances.": [
+     229
+    ]
+   },
+   "cited_by_count": 101,
+   "authorships": [
+    {
+     "author_position": "first",
+     "author": {
+      "id": "https://openalex.org/A5057741494",
+      "display_name": "Jeannette Gabbi",
+      "orcid": null,
+      "observed_orcids": []
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I35440088",
+       "display_name": "ETH Zurich",
+       "ror": "https://ror.org/05a28rw58",
+       "country_code": "CH",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I35440088"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4405254201",
+       "display_name": "Laboratory of Hydraulics, Hydrology and Glaciology",
+       "ror": "https://ror.org/01hs9md59",
+       "country_code": "CH",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I35440088",
+        "https://openalex.org/I4405254201"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "J. Gabbi",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5024755265",
+      "display_name": "Matthias Huss",
+      "orcid": "https://orcid.org/0000-0002-2377-6923",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-2377-6923"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I154338468",
+       "display_name": "University of Fribourg",
+       "ror": "https://ror.org/022fs9h90",
+       "country_code": "CH",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I154338468"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I35440088",
+       "display_name": "ETH Zurich",
+       "ror": "https://ror.org/05a28rw58",
+       "country_code": "CH",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I35440088"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4405254201",
+       "display_name": "Laboratory of Hydraulics, Hydrology and Glaciology",
+       "ror": "https://ror.org/01hs9md59",
+       "country_code": "CH",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I35440088",
+        "https://openalex.org/I4405254201"
+       ]
+      }
+     ],
+     "is_corresponding": true,
+     "raw_author_name": "M. Huss",
+     "raw_orcid": "https://orcid.org/0000-0002-2377-6923"
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5016312261",
+      "display_name": "Andreas Bauder",
+      "orcid": "https://orcid.org/0000-0001-7197-7706",
+      "observed_orcids": [
+       "https://orcid.org/0000-0001-7197-7706"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I35440088",
+       "display_name": "ETH Zurich",
+       "ror": "https://ror.org/05a28rw58",
+       "country_code": "CH",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I35440088"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I4405254201",
+       "display_name": "Laboratory of Hydraulics, Hydrology and Glaciology",
+       "ror": "https://ror.org/01hs9md59",
+       "country_code": "CH",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I35440088",
+        "https://openalex.org/I4405254201"
+       ]
+      }
+     ],
+     "is_corresponding": true,
+     "raw_author_name": "A. Bauder",
+     "raw_orcid": "https://orcid.org/0000-0001-7197-7706"
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5112750548",
+      "display_name": "Fuqiang Cao",
+      "orcid": "https://orcid.org/0000-0002-1201-1458",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-1201-1458"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I19820366",
+       "display_name": "Chinese Academy of Sciences",
+       "ror": "https://ror.org/034t30j35",
+       "country_code": "CN",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I19820366"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I2802229908",
+       "display_name": "Paul Scherrer Institute",
+       "ror": "https://ror.org/03eh3y714",
+       "country_code": "CH",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I2802229908"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I3018690959",
+       "display_name": "Guangzhou Institute of Geochemistry",
+       "ror": "https://ror.org/0356cst02",
+       "country_code": "CN",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I19820366",
+        "https://openalex.org/I3018690959"
+       ]
+      }
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "F. Cao",
+     "raw_orcid": null
+    },
+    {
+     "author_position": "last",
+     "author": {
+      "id": "https://openalex.org/A5009158797",
+      "display_name": "Margit Schwikowski",
+      "orcid": "https://orcid.org/0000-0002-0856-5183",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-0856-5183"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I2802229908",
+       "display_name": "Paul Scherrer Institute",
+       "ror": "https://ror.org/03eh3y714",
+       "country_code": "CH",
+       "type": "facility",
+       "lineage": [
+        "https://openalex.org/I2799323385",
+        "https://openalex.org/I2802229908"
+       ]
+      }
+     ],
+     "is_corresponding": true,
+     "raw_author_name": "M. Schwikowski",
+     "raw_orcid": "https://orcid.org/0000-0002-0856-5183"
+    }
+   ],
+   "primary_location": {
+    "id": "doi:10.5194/tc-9-1385-2015",
+    "is_oa": true,
+    "landing_page_url": "https://doi.org/10.5194/tc-9-1385-2015",
+    "pdf_url": "https://tc.copernicus.org/articles/9/1385/2015/tc-9-1385-2015.pdf",
+    "source": {
+     "id": "https://openalex.org/S169796457",
+     "display_name": "The cryosphere",
+     "issn_l": "1994-0416",
+     "issn": [
+      "1994-0416",
+      "1994-0424"
+     ],
+     "is_oa": true,
+     "is_in_doaj": true,
+     "is_core": true,
+     "listed_in": [
+      "cwts-core",
+      "doaj",
+      "jufo-3",
+      "norway-2"
+     ],
+     "host_organization": "https://openalex.org/P4310313756",
+     "host_organization_name": "Copernicus Publications",
+     "host_organization_lineage": [
+      "https://openalex.org/P4310313756"
+     ],
+     "host_organization_lineage_names": [
+      "Copernicus Publications"
+     ],
+     "type": "journal"
+    },
+    "license": "cc-by",
+    "license_id": "https://openalex.org/licenses/cc-by",
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "The Cryosphere",
+    "raw_type": "journal-article"
+   },
+   "open_access": {
+    "is_oa": true,
+    "oa_status": "gold",
+    "oa_url": "https://tc.copernicus.org/articles/9/1385/2015/tc-9-1385-2015.pdf",
+    "any_repository_has_fulltext": true
+   },
+   "concepts": [
+    {
+     "id": "https://openalex.org/C104730834",
+     "wikidata": "https://www.wikidata.org/wiki/Q828861",
+     "display_name": "Firn",
+     "level": 3,
+     "score": 0.7819060683250427
+    },
+    {
+     "id": "https://openalex.org/C100834320",
+     "wikidata": "https://www.wikidata.org/wiki/Q35666",
+     "display_name": "Glacier",
+     "level": 2,
+     "score": 0.7761821746826172
+    },
+    {
+     "id": "https://openalex.org/C195886398",
+     "wikidata": "https://www.wikidata.org/wiki/Q2110050",
+     "display_name": "Albedo (alchemy)",
+     "level": 3,
+     "score": 0.7698342204093933
+    }
+   ],
+   "type": "article",
+   "referenced_works": [
+    "https://openalex.org/W107948071",
+    "https://openalex.org/W132837105",
+    "https://openalex.org/W168435276"
+   ]
+  }
+ ],
+ "group_by": []
+}
