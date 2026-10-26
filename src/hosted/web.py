@@ -144,7 +144,7 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:26px 0 60px;colo
 
 
 def _page(title: str, body: str, status: int = 200, current: str = "") -> HTMLResponse:
-    links = [("/", "accueil"), ("/keys", "mes clés"), (SITE_URL, "thierrystpierre.com ↗")]
+    links = [("/", "scholar"), ("/keys", "mes clés"), (f"{SITE_URL}/logiciels/", "← logiciels")]
     nav = "".join(
         f"<a href='{href}'{' aria-current=page' if href == current else ''}>{label}</a>"
         for href, label in links
@@ -154,7 +154,8 @@ def _page(title: str, body: str, status: int = 200, current: str = "") -> HTMLRe
         "<meta name='viewport' content='width=device-width, initial-scale=1'>"
         f"<title>{html.escape(title)}</title>{_FONTS}<style>{_STYLE}</style></head>"
         "<body><header class='top'><div class='col'>"
-        "<a class='mark' href='/'>stpierre.t <span>/ scholar</span></a>"
+        f"<span><a class='mark' href='{SITE_URL}/'>stpierre.t</a> "
+        "<a class='mark' href='/'><span>/ scholar</span></a></span>"
         f"<nav>{nav}</nav></div></header>"
         f"<main class='col'>{body}</main>"
         "<footer><div class='col'>Scholar MCP · "
