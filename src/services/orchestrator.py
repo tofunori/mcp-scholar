@@ -24,13 +24,28 @@ class Orchestrator:
         scix_api_key: Optional[str] = None,
         core_api_key: Optional[str] = None,
         openalex_api_key: Optional[str] = None,
+        use_config_keys: bool = True,
     ):
+        """
+        Args:
+            use_config_keys: Fill missing API keys from the process config.
+                The hosted multi-user server passes False so one user's
+                missing key never falls back to the operator's own key.
+        """
         self.openalex_mailto = openalex_mailto or config.openalex_mailto
-        self.s2_api_key = s2_api_key or config.s2_api_key
-        self.scopus_api_key = scopus_api_key or config.scopus_api_key
-        self.scix_api_key = scix_api_key or config.scix_api_key
-        self.core_api_key = core_api_key or config.core_api_key
-        self.openalex_api_key = openalex_api_key or config.openalex_api_key
+        if use_config_keys:
+            # None lets SemanticScholarSource also read its env aliases.
+            self.s2_api_key = s2_api_key or config.s2_api_key or None
+            self.scopus_api_key = scopus_api_key or config.scopus_api_key
+            self.scix_api_key = scix_api_key or config.scix_api_key
+            self.core_api_key = core_api_key or config.core_api_key
+            self.openalex_api_key = openalex_api_key or config.openalex_api_key
+        else:
+            self.s2_api_key = s2_api_key or ""
+            self.scopus_api_key = scopus_api_key or ""
+            self.scix_api_key = scix_api_key or ""
+            self.core_api_key = core_api_key or ""
+            self.openalex_api_key = openalex_api_key or ""
 
         self.deduplicator = Deduplicator(
             title_threshold=config.title_similarity_threshold

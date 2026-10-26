@@ -124,6 +124,16 @@ Add the server to `~/.claude.json` (stdio):
 
 An HTTP server (`src/server_http.py`) is also available for sharing one process across sessions.
 
+## Hosting for a class
+
+Set `SCHOLAR_AUTH=google` (or `github`) and `src/server_http.py` becomes a
+multi-user service: people sign in with Google or GitHub, save their own API
+keys on a `/keys` page, and add `https://<your-host>/mcp` as a custom
+connector in Claude or a server in Codex. Each user's searches run with their
+own keys only. A Dockerfile and a `compose.yaml` with a Cloudflare Tunnel are
+included; see [docs/hosting.md](docs/hosting.md) and the student guide
+[docs/guide-etudiants.md](docs/guide-etudiants.md).
+
 ## Tools
 
 | Tool | Description |

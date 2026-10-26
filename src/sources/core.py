@@ -36,7 +36,8 @@ class CORESource(BaseSource):
                     requests_per_second=0.15,  # ~9 req/min (CORE plafonne a 10/min)
                     daily_limit=10_000,
                     burst_size=3,
-                )
+                ),
+                api_key=api_key,
             )
         super().__init__(limiter)
         self.api_key = api_key

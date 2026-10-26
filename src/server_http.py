@@ -12,8 +12,12 @@ from typing import Optional
 
 # Use standalone fastmcp (supports host/port in run())
 from fastmcp import FastMCP
+from starlette.responses import PlainTextResponse
 
 from .config import config
+from .hosted import HostedSettings, KeyStore
+from .hosted.oauth import build_auth_provider, current_identity
+from .hosted.web import register_routes
 from .services import Orchestrator
 from .server import (
     format_search_results,
@@ -36,16 +40,46 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
-# Creer le serveur FastMCP
-mcp = FastMCP("scholar-mcp")
+# Hosted multi-user mode (SCHOLAR_AUTH=google|github): sign-in required,
+# and each user's tool calls run with the API keys they saved on /keys.
+hosted = HostedSettings.from_env()
+keystore: Optional[KeyStore] = None
 
-# Orchestrateur global
+if hosted is None:
+    mcp = FastMCP("scholar-mcp")
+else:
+    keystore = KeyStore(hosted.data_dir / "keys.db", hosted.derive_key("keystore"))
+    mcp = FastMCP("scholar-mcp", auth=build_auth_provider(hosted))
+    register_routes(mcp, hosted, keystore)
+
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health(request) -> PlainTextResponse:
+    """Liveness probe for Docker and the tunnel; no auth, no upstream calls."""
+    return PlainTextResponse("ok")
+
+
+# Orchestrateur global (mode personnel uniquement)
 orchestrator: Optional[Orchestrator] = None
 
 
 def get_orchestrator() -> Orchestrator:
-    """Retourne l'orchestrateur, le cree si necessaire."""
+    """Retourne l'orchestrateur, le cree si necessaire.
+
+    In hosted mode this builds one from the caller's own keys and never
+    falls back to the keys in the server's environment.
+    """
     global orchestrator
+    if hosted is not None:
+        identity = current_identity(hosted)
+        if identity is None:
+            raise PermissionError("Sign-in required")
+        return Orchestrator(
+            openalex_mailto=hosted.contact_email or None,
+            use_config_keys=False,
+            **keystore.get(identity.user_id),
+        )
     if orchestrator is None:
         orchestrator = Orchestrator()
     return orchestrator
@@ -134,7 +168,13 @@ async def get_similar_papers(paper_id: str, limit: int = 10) -> str:
 async def get_api_status() -> str:
     """Affiche le statut des APIs configurees et leurs quotas."""
     orch = get_orchestrator()
-    return format_api_status(orch)
+    status = format_api_status(orch)
+    if hosted is not None:
+        status += (
+            "\n\nCes sources utilisent vos propres cles API. "
+            f"Ajoutez-les ou modifiez-les sur {hosted.base_url}/keys"
+        )
+    return status
 
 
 @mcp.tool()
@@ -154,15 +194,20 @@ async def get_author(query: str, limit: int = 10) -> str:
 
 def main():
     """Point d'entree du serveur HTTP/SSE."""
+    # 0.0.0.0 inside a container; keep the 127.0.0.1 default on a desktop.
+    host = os.getenv("SCHOLAR_HOST", "127.0.0.1")
+    port = int(os.getenv("SCHOLAR_PORT", "8323"))
     print("=" * 60)
     print("SCHOLAR MCP HTTP SERVER")
     print("=" * 60)
-    print("Starting on http://127.0.0.1:8323/sse")
+    print(f"Starting on http://{host}:{port}/mcp")
+    if hosted is not None:
+        print(f"Hosted mode: {hosted.provider} sign-in, site at {hosted.base_url}/")
     print("Press Ctrl+C to stop")
     print("=" * 60)
 
     logger.info("Demarrage scholar-mcp en mode Streamable HTTP...")
-    mcp.run(transport="http", host="127.0.0.1", port=8323)
+    mcp.run(transport="http", host=host, port=port)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 """Rate limiter adaptatif pour les APIs."""
 
 import asyncio
+import hashlib
 import time
 from dataclasses import dataclass
 from typing import Optional
@@ -104,22 +105,33 @@ class RateLimitExceeded(Exception):
     pass
 
 
-# Un seul limiteur par source pour tout le processus. Les sources sont
-# recreees a chaque appel d'outil; sans ce registre, chaque instance aurait
-# son propre token bucket et les quotas (ex. S2 a 1 req/s) ne seraient pas
-# respectes entre deux appels ou entre appels concurrents.
+# Un seul limiteur par source (et par cle API) pour tout le processus. Les
+# sources sont recreees a chaque appel d'outil; sans ce registre, chaque
+# instance aurait son propre token bucket et les quotas (ex. S2 a 1 req/s) ne
+# seraient pas respectes entre deux appels ou entre appels concurrents.
 _registry: dict[str, RateLimiter] = {}
 
 
-def get_limiter(name: str, config: RateLimitConfig) -> RateLimiter:
+def get_limiter(
+    name: str, config: RateLimitConfig, api_key: Optional[str] = None
+) -> RateLimiter:
     """Retourne le limiteur partage pour `name`, le cree au premier appel.
+
+    Quotas are per API key, so each key gets its own bucket: on the hosted
+    server every user brings their own keys and must not wait on (or burn)
+    someone else's quota. Keyless calls share one bucket per source. The key
+    itself is never stored, only a short hash of it.
 
     La config du premier appel est retenue; les suivants la reutilisent.
     """
-    limiter = _registry.get(name)
+    registry_key = name
+    if api_key:
+        digest = hashlib.sha256(api_key.encode()).hexdigest()[:16]
+        registry_key = f"{name}:{digest}"
+    limiter = _registry.get(registry_key)
     if limiter is None:
         limiter = RateLimiter(name, config)
-        _registry[name] = limiter
+        _registry[registry_key] = limiter
     return limiter
 
 
