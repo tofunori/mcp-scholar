@@ -68,61 +68,123 @@ class Signer:
 
 # --- Pages ----------------------------------------------------------------
 
+# Same visual world as thierrystpierre.com: a light "paper" theme, Archivo for
+# text, IBM Plex Mono for labels, sections separated by rules instead of boxes.
+SITE_URL = "https://thierrystpierre.com"
+
+_FONTS = (
+    "<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>"
+    "<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Archivo:"
+    "wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap'>"
+)
+
 _STYLE = """
-:root { color-scheme: light dark; --fg:#1f2328; --muted:#59636e; --bg:#ffffff;
-  --card:#f6f8fa; --line:#d1d9e0; --accent:#0969da; --ok:#1a7f37; }
-@media (prefers-color-scheme: dark) { :root { --fg:#e6edf3; --muted:#9198a1;
-  --bg:#0d1117; --card:#151b23; --line:#3d444d; --accent:#4493f8; --ok:#3fb950; } }
-* { box-sizing: border-box; }
-body { margin:0; background:var(--bg); color:var(--fg);
-  font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
-h1 { font-size: 1.6rem; margin: 0 0 4px; } h2 { font-size: 1.15rem; margin-top: 32px; }
-p.muted, .muted { color: var(--muted); }
-.card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; margin:16px 0; }
-code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
-pre { background:var(--card); border:1px solid var(--line); border-radius:6px; padding:12px; overflow-x:auto; }
-label { display:block; font-weight:600; margin-top:16px; }
-input[type=password], input[type=text] { width:100%; padding:8px 10px; margin-top:4px;
-  border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); font:inherit; }
-.field-note { font-size:.9rem; color:var(--muted); margin:4px 0 0; }
-.saved { color: var(--ok); font-weight: 600; font-size: .9rem; }
-button, .button { display:inline-block; margin-top:20px; padding:8px 16px; border-radius:6px;
-  border:1px solid var(--accent); background:var(--accent); color:#fff; font:inherit;
-  text-decoration:none; cursor:pointer; }
-button.secondary { background:transparent; color:var(--accent); }
-.row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-a { color: var(--accent); }
+:root{color-scheme:light;--bg:#eef1f3;--panel:#fff;--panel-2:#f7f9fa;--ink:#0e1417;
+  --mut:#61707a;--line:#d5dde1;--acc:#1b4965;--acc-soft:#9db6c4;--ok:#2d6a4f;--err:#9b2226;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Archivo",system-ui,-apple-system,sans-serif;
+  font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+a{color:var(--acc)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.col{max-width:660px;margin:0 auto;padding:0 26px}
+header.top{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+header.top .col{display:flex;align-items:center;justify-content:space-between;gap:18px;height:54px}
+.mark{font-family:var(--mono);font-size:.78rem;font-weight:500;text-decoration:none;color:var(--ink)}
+.mark span{color:var(--mut)}
+nav{display:flex;gap:1px;flex-wrap:wrap}
+nav a{font-family:var(--mono);font-size:.73rem;color:var(--mut);text-decoration:none;padding:5px 9px;
+  border-radius:2px;transition:color .15s,background .15s}
+nav a:hover{color:var(--ink);background:var(--panel-2)}
+nav a[aria-current]{color:var(--acc)}
+main{padding:56px 0 24px}
+h1{font-size:1.68rem;font-weight:600;letter-spacing:-.024em;line-height:1.15;margin:0 0 7px}
+.role{font-family:var(--mono);font-size:.75rem;color:var(--acc);margin:0 0 14px}
+.lede{margin:0 0 15px;max-width:62ch}
+.muted{color:var(--mut)}
+section{border-top:1px solid var(--line);padding:32px 0 0;margin-top:32px}
+.oeil{font-family:var(--mono);font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--mut);margin:0 0 20px}
+.etape{display:grid;grid-template-columns:32px 1fr;gap:14px;padding:11px 0;border-bottom:1px dotted var(--line)}
+.etape:last-child{border-bottom:0}
+.etape .n{font-family:var(--mono);font-size:.72rem;color:var(--acc-soft);padding-top:3px}
+.etape p{margin:0;font-size:.9rem}
+code,pre{font-family:var(--mono);font-size:.8rem}
+code{background:var(--panel-2);border:1px solid var(--line);border-radius:2px;padding:1px 5px;word-break:break-all}
+pre{background:var(--panel);border:1px solid var(--line);padding:12px 14px;overflow-x:auto;line-height:1.5}
+.cle{padding:14px 0;border-bottom:1px dotted var(--line)}
+.cle:last-of-type{border-bottom:0}
+label{display:block;font-weight:600;font-size:.92rem}
+.tete-cle{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.statut{font-family:var(--mono);font-size:.66rem;color:var(--ok)}
+label.effacer{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:.66rem;
+  font-weight:400;color:var(--mut);margin-left:auto;cursor:pointer}
+input[type=password],input[type=text]{width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--line);
+  border-radius:2px;background:var(--panel);color:var(--ink);font-family:var(--mono);font-size:.8rem}
+input[type=password]:focus{border-color:var(--acc);outline:0}
+.field-note{font-size:.82rem;color:var(--mut);margin:5px 0 0}
+.field-note a{text-decoration:none;border-bottom:1px solid var(--acc-soft)}
+.message{font-family:var(--mono);font-size:.75rem;padding:9px 12px;border-left:2px solid var(--ok);
+  background:var(--panel);margin:0 0 20px}
+.message.erreur{border-left-color:var(--err)}
+button,.button{display:inline-block;font-family:var(--mono);font-size:.75rem;padding:8px 14px;border-radius:2px;
+  border:1px solid var(--acc);background:var(--acc);color:#fff;text-decoration:none;cursor:pointer;
+  transition:background .15s,color .15s}
+button:hover,.button:hover{background:#13364b}
+button.secondary{background:var(--panel);color:var(--acc)}
+button.secondary:hover{background:var(--panel-2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px}
+form.inline{display:inline}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:26px 0 60px;color:var(--mut);
+  font-family:var(--mono);font-size:.71rem}
+@media (max-width:560px){.col{padding:0 18px}header.top{position:static}
+  header.top .col{height:auto;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}main{padding-top:36px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 """
 
 
-def _page(title: str, body: str, status: int = 200) -> HTMLResponse:
+def _page(title: str, body: str, status: int = 200, current: str = "") -> HTMLResponse:
+    links = [("/", "accueil"), ("/keys", "mes clés"), (SITE_URL, "thierrystpierre.com ↗")]
+    nav = "".join(
+        f"<a href='{href}'{' aria-current=page' if href == current else ''}>{label}</a>"
+        for href, label in links
+    )
     return HTMLResponse(
         "<!doctype html><html lang='fr'><head><meta charset='utf-8'>"
         "<meta name='viewport' content='width=device-width, initial-scale=1'>"
-        f"<title>{html.escape(title)}</title><style>{_STYLE}</style></head>"
-        f"<body><main>{body}</main></body></html>",
+        f"<title>{html.escape(title)}</title>{_FONTS}<style>{_STYLE}</style></head>"
+        "<body><header class='top'><div class='col'>"
+        "<a class='mark' href='/'>stpierre.t <span>/ scholar</span></a>"
+        f"<nav>{nav}</nav></div></header>"
+        f"<main class='col'>{body}</main>"
+        "<footer><div class='col'>Scholar MCP · "
+        "<a href='https://github.com/tofunori/mcp-scholar'>github.com/tofunori/mcp-scholar</a> · "
+        f"<a href='{SITE_URL}'>Thierry St-Pierre</a></div></footer></body></html>",
         status_code=status,
         headers={"Cache-Control": "no-store", "X-Frame-Options": "DENY"},
     )
 
 
+def _message(text: str, error: bool = False) -> str:
+    return f"<p class='message{' erreur' if error else ''}'>{text}</p>"
+
+
 def _connect_instructions(base_url: str) -> str:
     mcp_url = html.escape(f"{base_url}/mcp")
     return f"""
-<h2>Ajouter Scholar à Claude</h2>
-<ol>
-  <li>Dans Claude (application ou web), ouvrez <b>Customize &gt; Connectors</b>,
-      puis <b>+ Add</b> &gt; <b>Add custom connector</b>.</li>
-  <li>Nom : <code>Scholar</code>. URL : <code>{mcp_url}</code></li>
-  <li>Cliquez sur <b>Connect</b> et connectez-vous avec le même compte qu'ici.
-      Si Claude demande comment s'identifier, choisissez <b>Register automatically</b>.</li>
-</ol>
-<h2>Ajouter Scholar à Codex</h2>
+<section><p class='oeil'>Ajouter Scholar à Claude</p>
+<div class='etape'><span class='n'>01</span><p>Dans Claude (application ou web), ouvrez
+  <b>Customize &gt; Connectors</b>, puis <b>+ Add</b> &gt; <b>Add custom connector</b>.</p></div>
+<div class='etape'><span class='n'>02</span><p>Nom : <code>Scholar</code>. URL : <code>{mcp_url}</code></p></div>
+<div class='etape'><span class='n'>03</span><p>Cliquez sur <b>Connect</b> et connectez-vous avec le même
+  compte qu'ici. Si Claude demande comment s'identifier, choisissez <b>Register automatically</b>.</p></div>
+</section>
+<section><p class='oeil'>Ajouter Scholar à Codex</p>
 <p>Ajoutez ces lignes dans <code>~/.codex/config.toml</code> :</p>
 <pre>[mcp_servers.scholar]
 url = "{mcp_url}"</pre>
 <p>Puis lancez <code>codex mcp login scholar</code> et connectez-vous.</p>
+</section>
 """
 
 
@@ -158,8 +220,8 @@ def register_routes(
         session = session_of(request)
         if session:
             account = (
-                f"<p>Connecté : <b>{html.escape(session['display'])}</b>. "
-                "<a href='/keys'>Gérer mes clés API</a></p>"
+                f"<p class='muted'>Connecté : <b>{html.escape(session['display'])}</b></p>"
+                "<a class='button' href='/keys'>Gérer mes clés API</a>"
             )
         else:
             account = (
@@ -168,14 +230,19 @@ def register_routes(
         return _page(
             "Scholar",
             "<h1>Scholar</h1>"
-            "<p class='muted'>Recherche d'articles scientifiques dans OpenAlex, Semantic "
+            "<p class='role'>serveur MCP · recherche bibliographique</p>"
+            "<p class='lede'>Recherche d'articles scientifiques dans OpenAlex, Semantic "
             "Scholar, Crossref, Europe PMC, NASA ADS, CORE et Scopus, depuis Claude ou "
             "Codex.</p>"
-            "<div class='card'><b>1.</b> Connectez-vous et ajoutez vos propres clés API. "
-            "Vos recherches utilisent uniquement vos clés; les sources sans clé sont "
-            "ignorées (Crossref et Europe PMC n'en demandent pas).<br>"
-            "<b>2.</b> Ajoutez le connecteur dans Claude ou Codex (voir plus bas).</div>"
-            f"{account}{_connect_instructions(settings.base_url)}",
+            f"{account}"
+            "<section><p class='oeil'>Comment ça marche</p>"
+            "<div class='etape'><span class='n'>01</span><p>Connectez-vous et ajoutez vos "
+            "propres clés API. Vos recherches utilisent uniquement vos clés; les sources "
+            "sans clé sont ignorées (Crossref et Europe PMC n'en demandent pas).</p></div>"
+            "<div class='etape'><span class='n'>02</span><p>Ajoutez le connecteur dans "
+            "Claude ou Codex (voir plus bas).</p></div></section>"
+            f"{_connect_instructions(settings.base_url)}",
+            current="/",
         )
 
     @mcp.custom_route("/login", methods=["GET"])
@@ -273,38 +340,39 @@ def register_routes(
         fields = []
         for name, meta in KEY_FIELDS.items():
             saved = (
-                f" <span class='saved'>✓ enregistrée</span>"
-                f" <label style='display:inline;font-weight:400'>"
-                f"<input type='checkbox' name='clear_{name}'> effacer</label>"
+                "<span class='statut'>✓ enregistrée</span>"
+                f"<label class='effacer'><input type='checkbox' name='clear_{name}'> effacer</label>"
                 if name in stored
                 else ""
             )
             fields.append(
-                f"<label for='{name}'>{html.escape(meta['label'])}{saved}</label>"
+                f"<div class='cle'><div class='tete-cle'><label for='{name}'>{html.escape(meta['label'])}</label>{saved}</div>"
                 f"<input type='password' id='{name}' name='{name}' autocomplete='off' "
                 f"placeholder='{'Laisser vide pour garder la clé actuelle' if name in stored else 'Coller la clé ici'}'>"
                 f"<p class='field-note'>{html.escape(meta['note'])} "
-                f"<a href='{html.escape(meta['help_url'])}' target='_blank' rel='noopener'>Obtenir une clé</a></p>"
+                f"<a href='{html.escape(meta['help_url'])}' target='_blank' rel='noopener'>Obtenir une clé</a></p></div>"
             )
         csrf = signer.csrf_token(session)
         return _page(
             "Mes clés API · Scholar",
             "<h1>Mes clés API</h1>"
-            f"<p class='muted'>Connecté : {html.escape(session['display'])}</p>"
+            f"<p class='role'>{html.escape(session['display'])}</p>"
             f"{message}"
-            "<p>Vos clés sont chiffrées sur le serveur et servent uniquement à vos "
-            "propres recherches. Personne d'autre ne les utilise.</p>"
+            "<p class='lede'>Vos clés sont chiffrées sur le serveur et servent uniquement à "
+            "vos propres recherches. Personne d'autre ne les utilise.</p>"
+            "<section><p class='oeil'>Clés par source</p>"
             "<form method='post' action='/keys'>"
             f"<input type='hidden' name='csrf' value='{csrf}'>"
             + "".join(fields)
             + "<div class='row'><button type='submit'>Enregistrer</button>"
             "<button class='secondary' type='submit' name='action' value='clear_all'>"
             "Effacer toutes mes clés</button></div></form>"
-            "<form method='post' action='/logout'>"
+            "<form method='post' action='/logout' class='row'>"
             f"<input type='hidden' name='csrf' value='{csrf}'>"
-            "<button class='secondary' type='submit'>Se déconnecter</button></form>"
+            "<button class='secondary' type='submit'>Se déconnecter</button></form></section>"
             f"{_connect_instructions(settings.base_url)}",
             status,
+            current="/keys",
         )
 
     @mcp.custom_route("/keys", methods=["GET", "POST"])
@@ -317,11 +385,11 @@ def register_routes(
 
         form = await request.form()
         if not hmac.compare_digest(str(form.get("csrf", "")), signer.csrf_token(session)):
-            return keys_page(session, "<p><b>Formulaire expiré, réessayez.</b></p>", 400)
+            return keys_page(session, _message("Formulaire expiré, réessayez.", error=True), 400)
 
         if form.get("action") == "clear_all":
             keystore.delete(session["uid"])
-            return keys_page(session, "<p class='saved'>Toutes vos clés ont été effacées.</p>")
+            return keys_page(session, _message("Toutes vos clés ont été effacées."))
 
         updated = keystore.get(session["uid"])
         try:
@@ -334,12 +402,14 @@ def register_routes(
         except ValueError:
             return keys_page(
                 session,
-                "<p><b>Une des clés contient des caractères invalides. Rien n'a été "
-                "enregistré.</b></p>",
+                _message(
+                    "Une des clés contient des caractères invalides. Rien n'a été enregistré.",
+                    error=True,
+                ),
                 400,
             )
         keystore.set(session["uid"], session["display"], updated)
-        return keys_page(session, "<p class='saved'>Clés enregistrées.</p>")
+        return keys_page(session, _message("Clés enregistrées."))
 
     @mcp.custom_route("/logout", methods=["POST"])
     async def logout(request: Request) -> Response:
