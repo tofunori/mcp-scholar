@@ -30,3 +30,8 @@ Thumbs.db
 
 # Local reports
 temp_report.md
+
+# Hosted mode
+.env.hosted
+data/
+.env.tunnel

@@ -38,7 +38,8 @@ class OpenAlexSource(BaseSource):
                     requests_per_second=10.0,  # Polite pool
                     daily_limit=100_000,
                     burst_size=5,
-                )
+                ),
+                api_key=api_key,
             )
         super().__init__(limiter)
         self.mailto = mailto

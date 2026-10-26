@@ -55,7 +55,8 @@ class SciXSource(BaseSource):
                     requests_per_second=5.0,  # Burst OK
                     daily_limit=5000,
                     burst_size=10,
-                )
+                ),
+                api_key=api_key,
             )
         super().__init__(limiter)
 

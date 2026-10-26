@@ -189,5 +189,9 @@ def test_author_search_reports_source_errors(mock_http):
 # --- Rate limiting --------------------------------------------------------
 
 
-def test_sources_share_one_limiter_per_api():
-    assert OpenAlexSource().limiter is OpenAlexSource(api_key="x").limiter
+def test_sources_share_one_limiter_per_api_key():
+    assert OpenAlexSource().limiter is OpenAlexSource().limiter
+    assert OpenAlexSource(api_key="x").limiter is OpenAlexSource(api_key="x").limiter
+    # Each key has its own quota, so it gets its own bucket.
+    assert OpenAlexSource(api_key="x").limiter is not OpenAlexSource(api_key="y").limiter
+    assert OpenAlexSource().limiter is not OpenAlexSource(api_key="x").limiter

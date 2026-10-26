@@ -28,11 +28,14 @@ class SemanticScholarSource(BaseSource):
         self, api_key: Optional[str] = None, limiter: Optional[RateLimiter] = None
     ):
         # Cle API: argument explicite, sinon variable d'environnement.
-        self.api_key = (
-            api_key
-            or os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
-            or os.environ.get("S2_API_KEY")
-        )
+        # Une chaine vide signifie "pas de cle" (serveur heberge multi-usagers)
+        # et ne doit pas retomber sur la cle de l'environnement.
+        if api_key is None:
+            api_key = (
+                os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
+                or os.environ.get("S2_API_KEY")
+            )
+        self.api_key = api_key or None
 
         if limiter is None:
             if self.api_key:
@@ -46,6 +49,7 @@ class SemanticScholarSource(BaseSource):
                         daily_limit=None,
                         burst_size=1,
                     ),
+                    api_key=self.api_key,
                 )
             else:
                 # Sans cle: API publique limitee a 1 req/sec.

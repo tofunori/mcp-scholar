@@ -1,0 +1,39 @@
+# Hosted Scholar behind a Cloudflare Tunnel: no port is opened on the host
+# or the router. Fill in .env.hosted (see .env.hosted.example) and
+# .env.tunnel, then:
+#   docker compose up -d --build
+services:
+  scholar:
+    build: .
+    env_file: .env.hosted
+    volumes:
+      # Named volume: Docker gives it the image's /data owner (uid 10001).
+      - scholar-data:/data
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 1g
+
+  tunnel:
+    image: cloudflare/cloudflared:2026.10.4
+    command: tunnel --no-autoupdate run
+    # .env.tunnel holds one line, TUNNEL_TOKEN=..., from Cloudflare dashboard >
+    # Zero Trust > Networks > Tunnels. Point the tunnel's public hostname at
+    # http://scholar:8323
+    env_file: .env.tunnel
+    depends_on:
+      - scholar
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  scholar-data:

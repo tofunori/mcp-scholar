@@ -22,7 +22,8 @@ class ScopusSource(BaseSource):
                     daily_limit=None,
                     burst_size=1,
                     retry_after_429=120.0,  # Scopus peut etre strict
-                )
+                ),
+                api_key=api_key,
             )
         super().__init__(limiter)
         self.api_key = api_key
